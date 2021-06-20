@@ -1,4 +1,5 @@
 import rollupTypescript from '@rollup/plugin-typescript'
+import commonjs from '@rollup/plugin-commonjs'
 import pkg from './package.json'
 
 const config = {
@@ -14,6 +15,7 @@ const config = {
     },
   ],
   plugins: [
+    commonjs(),
     rollupTypescript(),
   ],
 }
