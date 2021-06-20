@@ -1,4 +1,5 @@
 import * as _ from '../util-lodash'
+import { Entry } from '../type'
 
 /*
  * Given a list of entries of the form {v, barycenter, weight} and a
@@ -25,10 +26,10 @@ import * as _ from '../util-lodash'
  *    graph. The property `i` is the lowest original index of any of the
  *    elements in `vs`.
  */
-function resolveConflicts(entries, cg) {
-  const mappedEntries = {}
+function resolveConflicts(entries: Array<Partial<Entry>>, cg) {
+  const mappedEntries: Record<string, Entry> = {}
   _.forEach(entries, function (entry, i) {
-    const tmp = (mappedEntries[entry.v] = {
+    const tmp: Entry = (mappedEntries[entry.v] = {
       indegree: 0,
       in: [],
       out: [],
@@ -91,14 +92,13 @@ function doResolveConflicts(sourceSet) {
     _.forEach(entry.out, handleOut(entry))
   }
 
-  return _.chain(entries)
+  return entries
     .filter(function (entry) {
       return !entry.merged
     })
     .map(function (entry) {
       return _.pick(entry, ['vs', 'i', 'barycenter', 'weight'])
     })
-    .value()
 }
 
 function mergeEntries(target, source) {

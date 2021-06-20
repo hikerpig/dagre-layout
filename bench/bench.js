@@ -3,7 +3,7 @@ import { sprintf } from 'sprintf'
 import { Graph } from 'graphlibrary'
 
 import rank from '../lib/rank'
-import dagre from '../index'
+import dagre from '../lib/index'
 
 const { layout } = dagre
 

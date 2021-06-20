@@ -1,4 +1,5 @@
 import * as _ from '../util-lodash'
+import { Barycenter } from '../type'
 
 function barycenter(g, movable) {
   return _.map(movable, function (v) {
@@ -23,7 +24,7 @@ function barycenter(g, movable) {
         v: v,
         barycenter: result.sum / result.weight,
         weight: result.weight,
-      }
+      } as Barycenter
     }
   })
 }

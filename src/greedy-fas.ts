@@ -2,6 +2,7 @@ import * as _ from './util-lodash'
 import { Graph } from 'graphlibrary'
 
 import List from './data/list'
+import { Entry } from './type'
 
 /*
  * A greedy heuristic for finding a feedback arc set for a graph. A feedback
@@ -11,7 +12,9 @@ import List from './data/list'
  * adjusts that from the paper to allow for weighted edges.
  */
 
-const DEFAULT_WEIGHT_FN = 1
+type WeightFn = (e: Entry) => number
+
+const DEFAULT_WEIGHT_FN: WeightFn = (e) => 1
 
 function greedyFAS(g, weightFn) {
   if (g.nodeCount() <= 1) {
@@ -55,7 +58,7 @@ function doGreedyFAS(g, buckets, zeroIdx) {
   return results
 }
 
-function removeNode(g, buckets, zeroIdx, entry, collectPredecessors) {
+function removeNode(g, buckets, zeroIdx, entry, collectPredecessors = false) {
   const results = collectPredecessors ? [] : undefined
 
   _.forEach(g.inEdges(entry.v), function (edge) {
@@ -83,7 +86,7 @@ function removeNode(g, buckets, zeroIdx, entry, collectPredecessors) {
   return results
 }
 
-function buildState(g, weightFn) {
+function buildState(g, weightFn: WeightFn) {
   const fasGraph = new Graph()
   let maxIn = 0
   let maxOut = 0

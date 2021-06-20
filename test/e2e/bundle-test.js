@@ -5,7 +5,7 @@
 
 const expect = window.chai.expect
 const dagre = window.dagre
-const graphsrc = window.graphsrc
+const graphsrc = window.graphlib
 
 describe('bundle', function () {
   it('exports dagre', function () {

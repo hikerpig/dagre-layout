@@ -1,6 +1,8 @@
 import * as _ from './util-lodash'
 import { Graph } from 'graphlibrary'
 
+export { Graph }
+
 /*
  * Adds a dummy node to the graph and return v.
  */
@@ -19,7 +21,7 @@ export function addDummyNode(g, type, attrs, name) {
  * Returns a new graph with only simple edges. Handles aggregation of data
  * associated with multi-edges.
  */
-export function simplify(g) {
+export function simplify(g: Graph) {
   const simplified = new Graph().setGraph(g.graph())
   _.forEach(g.nodes(), function (v) {
     simplified.setNode(v, g.node(v))
@@ -178,8 +180,15 @@ export function removeEmptyRanks(g) {
   })
 }
 
-export function addBorderNode(g, prefix, rank, order) {
-  const node = {
+type Node = {
+  width: number
+  height: number
+  rank?: number
+  order?: number
+}
+
+export function addBorderNode(g, prefix, rank?: number, order?: number) {
+  const node: Node = {
     width: 0,
     height: 0,
   }

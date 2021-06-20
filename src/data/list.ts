@@ -3,8 +3,13 @@
  * "Introduction to Algorithms".
  */
 
+type Setinel = {
+  _next?: Setinel
+  _prev?: Setinel
+}
+
 function List() {
-  const sentinel = {}
+  const sentinel: Setinel = {}
   sentinel._next = sentinel._prev = sentinel
   this._sentinel = sentinel
 }

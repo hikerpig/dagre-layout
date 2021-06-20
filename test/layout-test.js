@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import dagre from '../index'
+import dagre from '../src/index'
 
 const { layout } = dagre
 

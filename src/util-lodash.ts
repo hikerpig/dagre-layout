@@ -16,7 +16,6 @@ import maxBy from 'lodash/maxBy'
 import min from 'lodash/min'
 import max from 'lodash/max'
 import filter from 'lodash/filter'
-import chain from 'lodash/chain'
 import uniqueId from 'lodash/uniqueId'
 import zipObject from 'lodash/zipObject'
 import sortBy from 'lodash/sortBy'
@@ -43,7 +42,6 @@ export {
   min,
   max,
   filter,
-  chain,
   uniqueId,
   zipObject,
   sortBy,

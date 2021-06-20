@@ -20,6 +20,8 @@
     }
   },
   "include": [
-    "src"
+    "src",
+    "test",
+    "typings"
   ]
 }

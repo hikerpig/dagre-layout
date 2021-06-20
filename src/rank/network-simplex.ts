@@ -120,14 +120,14 @@ function calcCutValue(t, g, child) {
   return cutValue
 }
 
-function initLowLimValues(tree, root) {
+function initLowLimValues(tree, root?) {
   if (arguments.length < 2) {
     root = tree.nodes()[0]
   }
   dfsAssignLowLim(tree, {}, 1, root)
 }
 
-function dfsAssignLowLim(tree, visited, nextLim, v, parent) {
+function dfsAssignLowLim(tree, visited, nextLim, v?, parent?) {
   const low = nextLim
   const label = tree.node(v)
 

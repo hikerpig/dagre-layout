@@ -1,6 +1,7 @@
 import * as _ from '../util-lodash'
 
 import util from '../util'
+import { Barycenter, Entry } from '../type'
 
 function sort(entries, biasRight) {
   const parts = util.partition(entries, function (entry) {
@@ -27,7 +28,7 @@ function sort(entries, biasRight) {
     vsIndex = consumeUnsortable(vs, unsortable, vsIndex)
   })
 
-  const result = { vs: _.flatten(vs, true) }
+  const result: Partial<Entry> = { vs: _.flatten(vs) }
   if (weight) {
     result.barycenter = sum / weight
     result.weight = weight

@@ -7,6 +7,12 @@ import greedyFAS from '../src/greedy-fas'
 
 const { findCycles } = alg
 
+function weightFn (g) {
+  return function (e) {
+    return g.edge(e)
+  }
+}
+
 describe('greedyFAS', function () {
   let g
 
@@ -103,10 +109,4 @@ function checkFAS (g, fas) {
   // edge must be reversed, but the performance bound implies that only 2/3rds
   // of an edge can be reversed. I'm using floors to acount for this.
   expect(fas.length).to.be.lte(Math.floor(m / 2) - Math.floor(n / 6))
-}
-
-function weightFn (g) {
-  return function (e) {
-    return g.edge(e)
-  }
 }

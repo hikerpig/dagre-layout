@@ -1,8 +1,10 @@
+import { Graph } from '../util'
 import * as _ from '../util-lodash'
 
 import barycenter from './barycenter'
 import resolveConflicts from './resolve-conflicts'
 import sort from './sort'
+import { Entry } from '../type'
 
 function sortSubgraph(g, v, cg, biasRight) {
   let movable = g.children(v)
@@ -31,7 +33,7 @@ function sortSubgraph(g, v, cg, biasRight) {
   const entries = resolveConflicts(barycenters, cg)
   expandSubgraphs(entries, subgraphs)
 
-  const result = sort(entries, biasRight)
+  const result: Partial<Entry> = sort(entries, biasRight)
 
   if (bl) {
     result.vs = _.flatten([bl, result.vs, br])

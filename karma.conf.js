@@ -12,8 +12,8 @@ export default function (config) {
     files: [
       'node_modules/chai/chai.js',
       'node_modules/graphlibrary/dist/graphlib.js',
-      'dist/dagre-layout.js',
-      'test/bundle-test.js'
+      'dist/dagre-layout.umd.js',
+      'test/e2e/bundle-test.js'
     ],
 
     // list of files to exclude
@@ -45,7 +45,8 @@ export default function (config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'Firefox', 'Safari'],
+    // browsers: ['Chrome', 'Firefox', 'Safari'],
+    browsers: ['Chrome'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

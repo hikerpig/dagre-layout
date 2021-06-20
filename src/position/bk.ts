@@ -38,7 +38,7 @@ function findType1Conflicts(g, layering) {
     const prevLayerLength = prevLayer.length
     const lastNode = _.last(layer)
 
-    _.forEach(layer, function (v, i) {
+    _.forEach(layer, function (v, i: number) {
       const w = findOtherInnerSegmentNode(g, v)
       const k1 = w ? g.node(w).order : prevLayerLength
 
@@ -93,7 +93,7 @@ function findType2Conflicts(g, layering) {
     let nextNorthPos
     let southPos = 0
 
-    _.forEach(south, function (v, southLookahead) {
+    _.forEach(south, function (v, southLookahead: number) {
       if (g.node(v).dummy === 'border') {
         const predecessors = g.predecessors(v)
         if (predecessors.length) {
@@ -211,7 +211,7 @@ function horizontalCompaction(g, layering, root, align, reverseSep) {
     if (!_.has(visited, v)) {
       visited[v] = true
       xs[v] = _.reduce(
-        blockG.inEdges(v),
+        blockG.inEdges(v) || [],
         function (max, e) {
           pass1(e.v)
           return Math.max(max, xs[e.v] + blockG.edge(e))
@@ -228,7 +228,7 @@ function horizontalCompaction(g, layering, root, align, reverseSep) {
       visited[v]++
       const node = g.node(v)
       const min = _.reduce(
-        blockG.outEdges(v),
+        blockG.outEdges(v) || [],
         function (min, e) {
           pass2(e.w)
           return Math.min(min, xs[e.w] - blockG.edge(e))
@@ -276,14 +276,15 @@ function buildBlockGraph(g, layering, root, reverseSep) {
  * Returns the alignment that has the smallest width of the given alignments.
  */
 function findSmallestWidthAlignment(g, xss) {
+  type Pair = [string, number]
   return _.minBy(_.values(xss), function (xs) {
-    const min = (_.minBy(
+    const min = (_.minBy<Pair>(
       _.toPairs(xs),
-      (pair) => pair[1] - width(g, pair[0]) / 2
+      (pair: Pair) => pair[1] - width(g, pair[0]) / 2
     ) || ['k', 0])[1]
-    const max = (_.maxBy(
+    const max: number = (_.maxBy<Pair>(
       _.toPairs(xs),
-      (pair) => pair[1] + width(g, pair[0]) / 2
+      (pair: Pair) => pair[1] + width(g, pair[0]) / 2
     ) || ['k', 0])[1]
     return max - min
   })
@@ -423,7 +424,7 @@ function sep(nodeSep, edgeSep, reverseSep) {
   }
 }
 
-function width(g, v) {
+function width(g, v): number {
   return g.node(v).width
 }
 

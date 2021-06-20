@@ -1,3 +1,4 @@
+import { Graph } from 'graphlibrary'
 import * as _ from '../util-lodash'
 
 /*
@@ -24,24 +25,22 @@ function crossCount(g, layering) {
   return cc
 }
 
-function twoLayerCrossCount(g, northLayer, southLayer) {
+function twoLayerCrossCount(g: Graph, northLayer, southLayer) {
   // Sort all of the edges between the north and south layers by their position
   // in the north layer and then the south. Map these edges to the position of
   // their head in the south layer.
-  const southPos = _.zipObject(
+  const southPos = _.zipObject<number>(
     southLayer,
-    _.map(southLayer, function (v, i) {
+    southLayer.map(function (v, i) {
       return i
     })
   )
   const southEntries = _.flatten(
     _.map(northLayer, function (v) {
-      return _.chain(g.outEdges(v))
-        .map(function (e) {
-          return { pos: southPos[e.w], weight: g.edge(e).weight }
-        })
-        .sortBy('pos')
-        .value()
+      const list = (g.outEdges(v) || []).map(function (e) {
+        return { pos: southPos[e.w], weight: g.edge(e).weight }
+      })
+      return _.sortBy(list, 'pos')
     })
   )
 
