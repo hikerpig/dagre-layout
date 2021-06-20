@@ -5,7 +5,7 @@ export const config = {
   mode: 'development',
   target: 'web',
   entry: {
-    'dagre-layout': './index.js'
+    'dagre-layout': './lib/index.ts'
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -37,7 +37,7 @@ export const coreConfig = {
   mode: 'development',
   target: 'node',
   entry: {
-    'dagre-layout': './index.js'
+    'dagre-layout': './lib/index.ts'
   },
   externals: [nodeExternals()],
   output: {
