@@ -2,10 +2,9 @@ import * as _ from './util-lodash'
 
 import greedyFAS from './greedy-fas'
 
-function run (g) {
-  const fas = (g.graph().acyclicer === 'greedy'
-    ? greedyFAS(g, weightFn(g))
-    : dfsFAS(g))
+function run(g) {
+  const fas =
+    g.graph().acyclicer === 'greedy' ? greedyFAS(g, weightFn(g)) : dfsFAS(g)
   _.forEach(fas, function (e) {
     const label = g.edge(e)
     g.removeEdge(e)
@@ -14,19 +13,19 @@ function run (g) {
     g.setEdge(e.w, e.v, label, _.uniqueId('rev'))
   })
 
-  function weightFn (g) {
+  function weightFn(g) {
     return function (e) {
       return g.edge(e).weight
     }
   }
 }
 
-function dfsFAS (g) {
+function dfsFAS(g) {
   const fas = []
   const stack = {}
   const visited = {}
 
-  function dfs (v) {
+  function dfs(v) {
     if (_.has(visited, v)) {
       return
     }
@@ -46,7 +45,7 @@ function dfsFAS (g) {
   return fas
 }
 
-function undo (g) {
+function undo(g) {
   _.forEach(g.edges(), function (e) {
     const label = g.edge(e)
     if (label.reversed) {
@@ -62,5 +61,5 @@ function undo (g) {
 
 export default {
   run,
-  undo
+  undo,
 }

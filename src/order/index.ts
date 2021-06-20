@@ -23,10 +23,18 @@ import util from '../util'
  *    1. Graph nodes will have an "order" attribute based on the results of the
  *       algorithm.
  */
-function order (g) {
+function order(g) {
   const maxRank = util.maxRank(g)
-  const downLayerGraphs = buildLayerGraphs(g, _.range(1, maxRank + 1), 'inEdges')
-  const upLayerGraphs = buildLayerGraphs(g, _.range(maxRank - 1, -1, -1), 'outEdges')
+  const downLayerGraphs = buildLayerGraphs(
+    g,
+    _.range(1, maxRank + 1),
+    'inEdges'
+  )
+  const upLayerGraphs = buildLayerGraphs(
+    g,
+    _.range(maxRank - 1, -1, -1),
+    'outEdges'
+  )
 
   let layering = initOrder(g)
   assignOrder(g, layering)
@@ -49,13 +57,13 @@ function order (g) {
   assignOrder(g, best)
 }
 
-function buildLayerGraphs (g, ranks, relationship) {
+function buildLayerGraphs(g, ranks, relationship) {
   return _.map(ranks, function (rank) {
     return buildLayerGraph(g, rank, relationship)
   })
 }
 
-function sweepLayerGraphs (layerGraphs, biasRight) {
+function sweepLayerGraphs(layerGraphs, biasRight) {
   const cg = new Graph()
   _.forEach(layerGraphs, function (lg) {
     const root = lg.graph().root
@@ -67,7 +75,7 @@ function sweepLayerGraphs (layerGraphs, biasRight) {
   })
 }
 
-function assignOrder (g, layering) {
+function assignOrder(g, layering) {
   _.forEach(layering, function (layer) {
     _.forEach(layer, function (v, i) {
       g.node(v).order = i

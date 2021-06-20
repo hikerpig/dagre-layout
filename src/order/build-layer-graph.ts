@@ -31,10 +31,13 @@ import { Graph } from 'graphlibrary'
  *    5. The weights for copied edges are aggregated as need, since the output
  *       graph is not a multi-graph.
  */
-function buildLayerGraph (g, rank, relationship) {
+function buildLayerGraph(g, rank, relationship) {
   const root = createRootNode(g)
-  const result = new Graph({ compound: true }).setGraph({ root: root })
-    .setDefaultNodeLabel(function (v) { return g.node(v) })
+  const result = new Graph({ compound: true })
+    .setGraph({ root: root })
+    .setDefaultNodeLabel(function (v) {
+      return g.node(v)
+    })
 
   _.forEach(g.nodes(), function (v) {
     const node = g.node(v)
@@ -55,7 +58,7 @@ function buildLayerGraph (g, rank, relationship) {
       if (_.has(node, 'minRank')) {
         result.setNode(v, {
           borderLeft: node.borderLeft[rank],
-          borderRight: node.borderRight[rank]
+          borderRight: node.borderRight[rank],
         })
       }
     }
@@ -64,7 +67,7 @@ function buildLayerGraph (g, rank, relationship) {
   return result
 }
 
-function createRootNode (g) {
+function createRootNode(g) {
   let v
   while (g.hasNode((v = _.uniqueId('_root'))));
   return v

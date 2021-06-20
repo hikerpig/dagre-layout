@@ -1,6 +1,6 @@
 import * as _ from '../util-lodash'
 
-function addSubgraphConstraints (g, cg, vs) {
+function addSubgraphConstraints(g, cg, vs) {
   const prev = {}
   let rootPrev
 

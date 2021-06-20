@@ -11,10 +11,10 @@
     "dagre"
   ],
   "scripts": {
-    "lint": "standard",
+    "format": "prettier --fix -w src",
     "jest": "jest --coverage",
     "karma": "node -r @babel/register node_modules/.bin/karma start",
-    "test": "yarn lint && yarn jest && yarn karma --single-run",
+    "test": "yarn jest && yarn karma --single-run",
     "bench": "node -r babel-register lib/bench.js",
     "build": "yarn rollup -c",
     "typecheck": "yarn tsc --noEmit",
@@ -50,7 +50,6 @@
     "prettier": "^2.3.1",
     "rollup": "^2.52.1",
     "sprintf": "^0.1.5",
-    "standard": "^11.0.1",
     "tslib": "^2.3.0",
     "typescript": "^4.3.4",
     "yarn-upgrade-all": "^0.3.0"
@@ -64,12 +63,6 @@
     "dist/",
     "index.js"
   ],
-  "standard": {
-    "ignore": [
-      "dist/**/*.js",
-      "coverage/**/*.js"
-    ]
-  },
   "jest": {
     "testRegex": "test/.+?-test\\.js",
     "testPathIgnorePatterns": [

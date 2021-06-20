@@ -25,16 +25,16 @@ import * as _ from '../util-lodash'
  *    graph. The property `i` is the lowest original index of any of the
  *    elements in `vs`.
  */
-function resolveConflicts (entries, cg) {
+function resolveConflicts(entries, cg) {
   const mappedEntries = {}
   _.forEach(entries, function (entry, i) {
-    const tmp = mappedEntries[entry.v] = {
+    const tmp = (mappedEntries[entry.v] = {
       indegree: 0,
-      'in': [],
+      in: [],
       out: [],
       vs: [entry.v],
-      i: i
-    }
+      i: i,
+    })
     if (!_.isUndefined(entry.barycenter)) {
       tmp.barycenter = entry.barycenter
       tmp.weight = entry.weight
@@ -57,23 +57,25 @@ function resolveConflicts (entries, cg) {
   return doResolveConflicts(sourceSet)
 }
 
-function doResolveConflicts (sourceSet) {
+function doResolveConflicts(sourceSet) {
   const entries = []
 
-  function handleIn (vEntry) {
+  function handleIn(vEntry) {
     return function (uEntry) {
       if (uEntry.merged) {
         return
       }
-      if (_.isUndefined(uEntry.barycenter) ||
-          _.isUndefined(vEntry.barycenter) ||
-          uEntry.barycenter >= vEntry.barycenter) {
+      if (
+        _.isUndefined(uEntry.barycenter) ||
+        _.isUndefined(vEntry.barycenter) ||
+        uEntry.barycenter >= vEntry.barycenter
+      ) {
         mergeEntries(vEntry, uEntry)
       }
     }
   }
 
-  function handleOut (vEntry) {
+  function handleOut(vEntry) {
     return function (wEntry) {
       wEntry['in'].push(vEntry)
       if (--wEntry.indegree === 0) {
@@ -90,14 +92,16 @@ function doResolveConflicts (sourceSet) {
   }
 
   return _.chain(entries)
-    .filter(function (entry) { return !entry.merged })
+    .filter(function (entry) {
+      return !entry.merged
+    })
     .map(function (entry) {
       return _.pick(entry, ['vs', 'i', 'barycenter', 'weight'])
     })
     .value()
 }
 
-function mergeEntries (target, source) {
+function mergeEntries(target, source) {
   let sum = 0
   let weight = 0
 

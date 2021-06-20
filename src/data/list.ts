@@ -3,7 +3,7 @@
  * "Introduction to Algorithms".
  */
 
-function List () {
+function List() {
   const sentinel = {}
   sentinel._next = sentinel._prev = sentinel
   this._sentinel = sentinel
@@ -40,14 +40,14 @@ List.prototype.toString = function () {
   return '[' + strs.join(', ') + ']'
 }
 
-function unlink (entry) {
+function unlink(entry) {
   entry._prev._next = entry._next
   entry._next._prev = entry._prev
   delete entry._next
   delete entry._prev
 }
 
-function filterOutLinks (k, v) {
+function filterOutLinks(k, v) {
   if (k !== '_next' && k !== '_prev') {
     return v
   }

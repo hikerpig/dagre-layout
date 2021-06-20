@@ -2,12 +2,14 @@ import * as _ from '../util-lodash'
 
 import util from '../util'
 
-function sort (entries, biasRight) {
+function sort(entries, biasRight) {
   const parts = util.partition(entries, function (entry) {
     return _.has(entry, 'barycenter')
   })
   const sortable = parts.lhs
-  const unsortable = _.sortBy(parts.rhs, function (entry) { return -entry.i })
+  const unsortable = _.sortBy(parts.rhs, function (entry) {
+    return -entry.i
+  })
   const vs = []
   let sum = 0
   let weight = 0
@@ -33,7 +35,7 @@ function sort (entries, biasRight) {
   return result
 }
 
-function consumeUnsortable (vs, unsortable, index) {
+function consumeUnsortable(vs, unsortable, index) {
   let last
   while (unsortable.length && (last = _.last(unsortable)).i <= index) {
     unsortable.pop()
@@ -43,7 +45,7 @@ function consumeUnsortable (vs, unsortable, index) {
   return index
 }
 
-function compareWithBias (bias) {
+function compareWithBias(bias) {
   return function (entryV, entryW) {
     if (entryV.barycenter < entryW.barycenter) {
       return -1

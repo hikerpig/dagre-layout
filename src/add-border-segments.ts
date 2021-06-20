@@ -2,8 +2,8 @@ import * as _ from './util-lodash'
 
 import util from './util'
 
-function addBorderSegments (g) {
-  function dfs (v) {
+function addBorderSegments(g) {
+  function dfs(v) {
     const children = g.children(v)
     const node = g.node(v)
     if (children.length) {
@@ -13,9 +13,11 @@ function addBorderSegments (g) {
     if (_.has(node, 'minRank')) {
       node.borderLeft = []
       node.borderRight = []
-      for (let rank = node.minRank, maxRank = node.maxRank + 1;
+      for (
+        let rank = node.minRank, maxRank = node.maxRank + 1;
         rank < maxRank;
-        ++rank) {
+        ++rank
+      ) {
         addBorderNode(g, 'borderLeft', '_bl', v, node, rank)
         addBorderNode(g, 'borderRight', '_br', v, node, rank)
       }
@@ -25,7 +27,7 @@ function addBorderSegments (g) {
   _.forEach(g.children(), dfs)
 }
 
-function addBorderNode (g, prop, prefix, sg, sgNode, rank) {
+function addBorderNode(g, prop, prefix, sg, sgNode, rank) {
   const label = { width: 0, height: 0, rank: rank, borderType: prop }
   const prev = sgNode[prop][rank - 1]
   const curr = util.addDummyNode(g, 'border', label, prefix)

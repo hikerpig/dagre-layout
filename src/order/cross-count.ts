@@ -16,7 +16,7 @@ import * as _ from '../util-lodash'
  *
  * This algorithm is derived from Barth, et al., "Bilayer Cross Counting."
  */
-function crossCount (g, layering) {
+function crossCount(g, layering) {
   let cc = 0
   for (let i = 1; i < layering.length; ++i) {
     cc += twoLayerCrossCount(g, layering[i - 1], layering[i])
@@ -24,20 +24,26 @@ function crossCount (g, layering) {
   return cc
 }
 
-function twoLayerCrossCount (g, northLayer, southLayer) {
+function twoLayerCrossCount(g, northLayer, southLayer) {
   // Sort all of the edges between the north and south layers by their position
   // in the north layer and then the south. Map these edges to the position of
   // their head in the south layer.
-  const southPos = _.zipObject(southLayer,
-    _.map(southLayer, function (v, i) { return i }))
-  const southEntries = _.flatten(_.map(northLayer, function (v) {
-    return _.chain(g.outEdges(v))
-      .map(function (e) {
-        return { pos: southPos[e.w], weight: g.edge(e).weight }
-      })
-      .sortBy('pos')
-      .value()
-  }))
+  const southPos = _.zipObject(
+    southLayer,
+    _.map(southLayer, function (v, i) {
+      return i
+    })
+  )
+  const southEntries = _.flatten(
+    _.map(northLayer, function (v) {
+      return _.chain(g.outEdges(v))
+        .map(function (e) {
+          return { pos: southPos[e.w], weight: g.edge(e).weight }
+        })
+        .sortBy('pos')
+        .value()
+    })
+  )
 
   // Build the accumulator tree
   let firstIndex = 1
@@ -46,7 +52,9 @@ function twoLayerCrossCount (g, northLayer, southLayer) {
   }
   const treeSize = 2 * firstIndex - 1
   firstIndex -= 1
-  const tree = _.map(new Array(treeSize), function () { return 0 })
+  const tree = _.map(new Array(treeSize), function () {
+    return 0
+  })
 
   // Calculate the weighted crossings
   let cc = 0

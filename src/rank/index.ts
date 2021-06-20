@@ -21,24 +21,31 @@ import networkSimplex from './network-simplex'
  *       algorithm. Ranks can start at any index (including negative), we'll
  *       fix them up later.
  */
-function rank (g) {
+function rank(g) {
   switch (g.graph().ranker) {
-    case 'network-simplex': networkSimplexRanker(g); break
-    case 'tight-tree': tightTreeRanker(g); break
-    case 'longest-path': longestPathRanker(g); break
-    default: networkSimplexRanker(g)
+    case 'network-simplex':
+      networkSimplexRanker(g)
+      break
+    case 'tight-tree':
+      tightTreeRanker(g)
+      break
+    case 'longest-path':
+      longestPathRanker(g)
+      break
+    default:
+      networkSimplexRanker(g)
   }
 }
 
 // A fast and simple ranker, but results are far from optimal.
 const longestPathRanker = longestPath
 
-function tightTreeRanker (g) {
+function tightTreeRanker(g) {
   longestPath(g)
   feasibleTree(g)
 }
 
-function networkSimplexRanker (g) {
+function networkSimplexRanker(g) {
   networkSimplex(g)
 }
 

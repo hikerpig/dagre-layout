@@ -1,6 +1,6 @@
 import * as _ from './util-lodash'
 
-function parentDummyChains (g) {
+function parentDummyChains(g) {
   const postorderNums = postorder(g)
 
   _.forEach(g.graph().dummyChains, function (v) {
@@ -17,8 +17,10 @@ function parentDummyChains (g) {
       node = g.node(v)
 
       if (ascending) {
-        while ((pathV = path[pathIdx]) !== lca &&
-               g.node(pathV).maxRank < node.rank) {
+        while (
+          (pathV = path[pathIdx]) !== lca &&
+          g.node(pathV).maxRank < node.rank
+        ) {
           pathIdx++
         }
 
@@ -28,8 +30,10 @@ function parentDummyChains (g) {
       }
 
       if (!ascending) {
-        while (pathIdx < path.length - 1 &&
-               g.node(pathV = path[pathIdx + 1]).minRank <= node.rank) {
+        while (
+          pathIdx < path.length - 1 &&
+          g.node((pathV = path[pathIdx + 1])).minRank <= node.rank
+        ) {
           pathIdx++
         }
         pathV = path[pathIdx]
@@ -43,7 +47,7 @@ function parentDummyChains (g) {
 
 // Find a path from v to w through the lowest common ancestor (LCA). Return the
 // full path and the LCA.
-function findPath (g, postorderNums, v, w) {
+function findPath(g, postorderNums, v, w) {
   const vPath = []
   const wPath = []
   const low = Math.min(postorderNums[v].low, postorderNums[w].low)
@@ -56,8 +60,10 @@ function findPath (g, postorderNums, v, w) {
   do {
     parent = g.parent(parent)
     vPath.push(parent)
-  } while (parent &&
-           (postorderNums[parent].low > low || lim > postorderNums[parent].lim))
+  } while (
+    parent &&
+    (postorderNums[parent].low > low || lim > postorderNums[parent].lim)
+  )
   lca = parent
 
   // Traverse from w to LCA
@@ -69,11 +75,11 @@ function findPath (g, postorderNums, v, w) {
   return { path: vPath.concat(wPath.reverse()), lca: lca }
 }
 
-function postorder (g) {
+function postorder(g) {
   const result = {}
   let lim = 0
 
-  function dfs (v) {
+  function dfs(v) {
     const low = lim
     _.forEach(g.children(v), dfs)
     result[v] = { low: low, lim: lim++ }

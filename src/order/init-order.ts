@@ -11,15 +11,21 @@ import * as _ from '../util-lodash'
  * Returns a layering matrix with an array per layer and each layer sorted by
  * the order of its nodes.
  */
-function initOrder (g) {
+function initOrder(g) {
   const visited = {}
   const simpleNodes = _.filter(g.nodes(), function (v) {
     return !g.children(v).length
   })
-  const maxRank = _.max(_.map(simpleNodes, function (v) { return g.node(v).rank }))
-  const layers = _.map(_.range(maxRank + 1), function () { return [] })
+  const maxRank = _.max(
+    _.map(simpleNodes, function (v) {
+      return g.node(v).rank
+    })
+  )
+  const layers = _.map(_.range(maxRank + 1), function () {
+    return []
+  })
 
-  function dfs (v) {
+  function dfs(v) {
     if (_.has(visited, v)) return
     visited[v] = true
     const node = g.node(v)
@@ -27,7 +33,9 @@ function initOrder (g) {
     _.forEach(g.successors(v), dfs)
   }
 
-  const orderedVs = _.sortBy(simpleNodes, function (v) { return g.node(v).rank })
+  const orderedVs = _.sortBy(simpleNodes, function (v) {
+    return g.node(v).rank
+  })
   _.forEach(orderedVs, dfs)
 
   return layers

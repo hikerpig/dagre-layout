@@ -1,13 +1,13 @@
 import * as _ from './util-lodash'
 
-function adjust (g) {
+function adjust(g) {
   const rankDir = g.graph().rankdir.toLowerCase()
   if (rankDir === 'lr' || rankDir === 'rl') {
     swapWidthHeight(g)
   }
 }
 
-function undo (g) {
+function undo(g) {
   const rankDir = g.graph().rankdir.toLowerCase()
   if (rankDir === 'bt' || rankDir === 'rl') {
     reverseY(g)
@@ -19,19 +19,25 @@ function undo (g) {
   }
 }
 
-function swapWidthHeight (g) {
-  _.forEach(g.nodes(), function (v) { swapWidthHeightOne(g.node(v)) })
-  _.forEach(g.edges(), function (e) { swapWidthHeightOne(g.edge(e)) })
+function swapWidthHeight(g) {
+  _.forEach(g.nodes(), function (v) {
+    swapWidthHeightOne(g.node(v))
+  })
+  _.forEach(g.edges(), function (e) {
+    swapWidthHeightOne(g.edge(e))
+  })
 }
 
-function swapWidthHeightOne (attrs) {
+function swapWidthHeightOne(attrs) {
   const w = attrs.width
   attrs.width = attrs.height
   attrs.height = w
 }
 
-function reverseY (g) {
-  _.forEach(g.nodes(), function (v) { reverseYOne(g.node(v)) })
+function reverseY(g) {
+  _.forEach(g.nodes(), function (v) {
+    reverseYOne(g.node(v))
+  })
 
   _.forEach(g.edges(), function (e) {
     const edge = g.edge(e)
@@ -42,12 +48,14 @@ function reverseY (g) {
   })
 }
 
-function reverseYOne (attrs) {
+function reverseYOne(attrs) {
   attrs.y = -attrs.y
 }
 
-function swapXY (g) {
-  _.forEach(g.nodes(), function (v) { swapXYOne(g.node(v)) })
+function swapXY(g) {
+  _.forEach(g.nodes(), function (v) {
+    swapXYOne(g.node(v))
+  })
 
   _.forEach(g.edges(), function (e) {
     const edge = g.edge(e)
@@ -58,7 +66,7 @@ function swapXY (g) {
   })
 }
 
-function swapXYOne (attrs) {
+function swapXYOne(attrs) {
   const x = attrs.x
   attrs.x = attrs.y
   attrs.y = x
@@ -66,5 +74,5 @@ function swapXYOne (attrs) {
 
 export default {
   adjust,
-  undo
+  undo,
 }

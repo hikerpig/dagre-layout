@@ -28,7 +28,7 @@ import { slack } from './util'
  * Returns a tree (undirected graph) that is constructed using only "tight"
  * edges.
  */
-function feasibleTree (g) {
+function feasibleTree(g) {
   const t = new Graph({ directed: false })
 
   // Choose arbitrary node from which to start our tree
@@ -51,11 +51,11 @@ function feasibleTree (g) {
  * Finds a maximal tree of tight edges and returns the number of nodes in the
  * tree.
  */
-function tightTree (t, g) {
-  function dfs (v) {
+function tightTree(t, g) {
+  function dfs(v) {
     _.forEach(g.nodeEdges(v), function (e) {
       const edgeV = e.v
-      const w = (v === edgeV) ? e.w : edgeV
+      const w = v === edgeV ? e.w : edgeV
       if (!t.hasNode(w) && !slack(g, e)) {
         t.setNode(w, {})
         t.setEdge(v, w, {})
@@ -72,7 +72,7 @@ function tightTree (t, g) {
  * Finds the edge with the smallest slack that is incident on tree and returns
  * it.
  */
-function findMinSlackEdge (t, g) {
+function findMinSlackEdge(t, g) {
   return _.minBy(g.edges(), function (e) {
     if (t.hasNode(e.v) !== t.hasNode(e.w)) {
       return slack(g, e)
@@ -80,7 +80,7 @@ function findMinSlackEdge (t, g) {
   })
 }
 
-function shiftRanks (t, g, delta) {
+function shiftRanks(t, g, delta) {
   _.forEach(t.nodes(), function (v) {
     g.node(v).rank += delta
   })

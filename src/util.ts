@@ -4,7 +4,7 @@ import { Graph } from 'graphlibrary'
 /*
  * Adds a dummy node to the graph and return v.
  */
-export function addDummyNode (g, type, attrs, name) {
+export function addDummyNode(g, type, attrs, name) {
   let v
   do {
     v = _.uniqueId(name)
@@ -19,22 +19,26 @@ export function addDummyNode (g, type, attrs, name) {
  * Returns a new graph with only simple edges. Handles aggregation of data
  * associated with multi-edges.
  */
-export function simplify (g) {
+export function simplify(g) {
   const simplified = new Graph().setGraph(g.graph())
-  _.forEach(g.nodes(), function (v) { simplified.setNode(v, g.node(v)) })
+  _.forEach(g.nodes(), function (v) {
+    simplified.setNode(v, g.node(v))
+  })
   _.forEach(g.edges(), function (e) {
     const simpleLabel = simplified.edge(e.v, e.w) || { weight: 0, minlen: 1 }
     const label = g.edge(e)
     simplified.setEdge(e.v, e.w, {
       weight: simpleLabel.weight + label.weight,
-      minlen: Math.max(simpleLabel.minlen, label.minlen)
+      minlen: Math.max(simpleLabel.minlen, label.minlen),
     })
   })
   return simplified
 }
 
-export function asNonCompoundGraph (g) {
-  const simplified = new Graph({ multigraph: g.isMultigraph() }).setGraph(g.graph())
+export function asNonCompoundGraph(g) {
+  const simplified = new Graph({ multigraph: g.isMultigraph() }).setGraph(
+    g.graph()
+  )
   _.forEach(g.nodes(), function (v) {
     if (!g.children(v).length) {
       simplified.setNode(v, g.node(v))
@@ -46,7 +50,7 @@ export function asNonCompoundGraph (g) {
   return simplified
 }
 
-export function successorWeights (g) {
+export function successorWeights(g) {
   const weightMap = _.map(g.nodes(), function (v) {
     const sucs = {}
     _.forEach(g.outEdges(v), function (e) {
@@ -57,7 +61,7 @@ export function successorWeights (g) {
   return _.zipObject(g.nodes(), weightMap)
 }
 
-export function predecessorWeights (g) {
+export function predecessorWeights(g) {
   const weightMap = _.map(g.nodes(), function (v) {
     const preds = {}
     _.forEach(g.inEdges(v), function (e) {
@@ -72,7 +76,7 @@ export function predecessorWeights (g) {
  * Finds where a line starting at point ({x, y}) would intersect a rectangle
  * ({x, y, width, height}) if it were pointing at the rectangle's center.
  */
-export function intersectRect (rect, point) {
+export function intersectRect(rect, point) {
   const x = rect.x
   const y = rect.y
 
@@ -94,7 +98,7 @@ export function intersectRect (rect, point) {
     if (dy < 0) {
       h = -h
     }
-    sx = h * dx / dy
+    sx = (h * dx) / dy
     sy = h
   } else {
     // Intersection is left or right of rect.
@@ -102,7 +106,7 @@ export function intersectRect (rect, point) {
       w = -w
     }
     sx = w
-    sy = w * dy / dx
+    sy = (w * dy) / dx
   }
 
   return { x: x + sx, y: y + sy }
@@ -112,8 +116,10 @@ export function intersectRect (rect, point) {
  * Given a DAG with each node assigned "rank" and "order" properties, this
  * function will produce a matrix with the ids of each node.
  */
-export function buildLayerMatrix (g) {
-  const layering = _.map(_.range(maxRank(g) + 1), function () { return [] })
+export function buildLayerMatrix(g) {
+  const layering = _.map(_.range(maxRank(g) + 1), function () {
+    return []
+  })
   _.forEach(g.nodes(), function (v) {
     const node = g.node(v)
     const rank = node.rank
@@ -128,8 +134,12 @@ export function buildLayerMatrix (g) {
  * Adjusts the ranks for all nodes in the graph such that all nodes v have
  * rank(v) >= 0 and at least one node w has rank(w) = 0.
  */
-export function normalizeRanks (g) {
-  const min = _.min(_.map(g.nodes(), function (v) { return g.node(v).rank }))
+export function normalizeRanks(g) {
+  const min = _.min(
+    _.map(g.nodes(), function (v) {
+      return g.node(v).rank
+    })
+  )
   _.forEach(g.nodes(), function (v) {
     const node = g.node(v)
     if (_.has(node, 'rank')) {
@@ -138,9 +148,13 @@ export function normalizeRanks (g) {
   })
 }
 
-export function removeEmptyRanks (g) {
+export function removeEmptyRanks(g) {
   // Ranks may not start at 0, so we need to offset them
-  const offset = _.min(_.map(g.nodes(), function (v) { return g.node(v).rank }))
+  const offset = _.min(
+    _.map(g.nodes(), function (v) {
+      return g.node(v).rank
+    })
+  )
 
   const layers = []
   _.forEach(g.nodes(), function (v) {
@@ -157,15 +171,17 @@ export function removeEmptyRanks (g) {
     if (_.isUndefined(vs) && i % nodeRankFactor !== 0) {
       --delta
     } else if (delta) {
-      _.forEach(vs, function (v) { g.node(v).rank += delta })
+      _.forEach(vs, function (v) {
+        g.node(v).rank += delta
+      })
     }
   })
 }
 
-export function addBorderNode (g, prefix, rank, order) {
+export function addBorderNode(g, prefix, rank, order) {
   const node = {
     width: 0,
-    height: 0
+    height: 0,
   }
   if (arguments.length >= 4) {
     node.rank = rank
@@ -174,13 +190,15 @@ export function addBorderNode (g, prefix, rank, order) {
   return addDummyNode(g, 'border', node, prefix)
 }
 
-export function maxRank (g) {
-  return _.max(_.map(g.nodes(), function (v) {
-    const rank = g.node(v).rank
-    if (!_.isUndefined(rank)) {
-      return rank
-    }
-  }))
+export function maxRank(g) {
+  return _.max(
+    _.map(g.nodes(), function (v) {
+      const rank = g.node(v).rank
+      if (!_.isUndefined(rank)) {
+        return rank
+      }
+    })
+  )
 }
 
 /*
@@ -188,7 +206,7 @@ export function maxRank (g) {
  * function returns true for an entry it goes into `lhs`. Otherwise it goes
  * into `rhs.
  */
-export function partition (collection, fn) {
+export function partition(collection, fn) {
   const result = { lhs: [], rhs: [] }
   _.forEach(collection, function (value) {
     if (fn(value)) {
@@ -204,7 +222,7 @@ export function partition (collection, fn) {
  * Returns a new function that wraps `fn` with a timer. The wrapper logs the
  * time it takes to execute the function.
  */
-export function time (name, fn) {
+export function time(name, fn) {
   const start = Date.now()
   try {
     return fn()
@@ -213,7 +231,7 @@ export function time (name, fn) {
   }
 }
 
-export function notime (name, fn) {
+export function notime(name, fn) {
   return fn()
 }
 
@@ -231,5 +249,5 @@ export default {
   maxRank,
   partition,
   time,
-  notime
+  notime,
 }

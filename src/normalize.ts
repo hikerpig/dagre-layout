@@ -18,12 +18,14 @@ import util from './util'
  *    3. The graph is augmented with a "dummyChains" attribute which contains
  *       the first dummy in each chain of dummy nodes produced.
  */
-function run (g) {
+function run(g) {
   g.graph().dummyChains = []
-  _.forEach(g.edges(), function (edge) { normalizeEdge(g, edge) })
+  _.forEach(g.edges(), function (edge) {
+    normalizeEdge(g, edge)
+  })
 }
 
-function normalizeEdge (g, e) {
+function normalizeEdge(g, e) {
   let v = e.v
   let vRank = g.node(v).rank
   const w = e.w
@@ -46,7 +48,7 @@ function normalizeEdge (g, e) {
       height: 0,
       edgeLabel: edgeLabel,
       edgeObj: e,
-      rank: vRank
+      rank: vRank,
     }
     dummy = util.addDummyNode(g, 'edge', attrs, '_d')
     if (vRank === labelRank) {
@@ -65,7 +67,7 @@ function normalizeEdge (g, e) {
   g.setEdge(v, w, { weight: edgeLabel.weight }, name)
 }
 
-function undo (g) {
+function undo(g) {
   _.forEach(g.graph().dummyChains, function (v) {
     let node = g.node(v)
     const origLabel = node.edgeLabel
@@ -89,5 +91,5 @@ function undo (g) {
 
 export default {
   run,
-  undo
+  undo,
 }

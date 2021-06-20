@@ -25,10 +25,10 @@ import util from '../util'
  * This algorithm (safely) assumes that a dummy node will only be incident on a
  * single node in the layers being scanned.
  */
-function findType1Conflicts (g, layering) {
+function findType1Conflicts(g, layering) {
   const conflicts = {}
 
-  function visitLayer (prevLayer, layer) {
+  function visitLayer(prevLayer, layer) {
     // last visited node in the previous layer that is incident on an inner
     // segment.
     let k0 = 0
@@ -47,8 +47,10 @@ function findType1Conflicts (g, layering) {
           _.forEach(g.predecessors(scanNode), function (u) {
             const uLabel = g.node(u)
             const uPos = uLabel.order
-            if ((uPos < k0 || k1 < uPos) &&
-              !(uLabel.dummy && g.node(scanNode).dummy)) {
+            if (
+              (uPos < k0 || k1 < uPos) &&
+              !(uLabel.dummy && g.node(scanNode).dummy)
+            ) {
               addConflict(conflicts, u, scanNode)
             }
           })
@@ -65,18 +67,20 @@ function findType1Conflicts (g, layering) {
   return conflicts
 }
 
-function findType2Conflicts (g, layering) {
+function findType2Conflicts(g, layering) {
   const conflicts = {}
 
-  function scan (south, southPos, southEnd, prevNorthBorder, nextNorthBorder) {
+  function scan(south, southPos, southEnd, prevNorthBorder, nextNorthBorder) {
     let v
     _.forEach(_.range(southPos, southEnd), function (i) {
       v = south[i]
       if (g.node(v).dummy) {
         _.forEach(g.predecessors(v), function (u) {
           const uNode = g.node(u)
-          if (uNode.dummy &&
-            (uNode.order < prevNorthBorder || uNode.order > nextNorthBorder)) {
+          if (
+            uNode.dummy &&
+            (uNode.order < prevNorthBorder || uNode.order > nextNorthBorder)
+          ) {
             addConflict(conflicts, u, v)
           }
         })
@@ -84,7 +88,7 @@ function findType2Conflicts (g, layering) {
     })
   }
 
-  function visitLayer (north, south) {
+  function visitLayer(north, south) {
     let prevNorthPos = -1
     let nextNorthPos
     let southPos = 0
@@ -109,7 +113,7 @@ function findType2Conflicts (g, layering) {
   return conflicts
 }
 
-function findOtherInnerSegmentNode (g, v) {
+function findOtherInnerSegmentNode(g, v) {
   if (g.node(v).dummy) {
     return _.find(g.predecessors(v), function (u) {
       return g.node(u).dummy
@@ -117,7 +121,7 @@ function findOtherInnerSegmentNode (g, v) {
   }
 }
 
-function addConflict (conflicts, v, w) {
+function addConflict(conflicts, v, w) {
   if (v > w) {
     const tmp = v
     v = w
@@ -131,7 +135,7 @@ function addConflict (conflicts, v, w) {
   conflictsV[w] = true
 }
 
-function hasConflict (conflicts, v, w) {
+function hasConflict(conflicts, v, w) {
   if (v > w) {
     const tmp = v
     v = w
@@ -148,7 +152,7 @@ function hasConflict (conflicts, v, w) {
  * we're trying to form a block with, we also ignore that possibility - our
  * blocks would be split in that scenario.
  */
-function verticalAlignment (g, layering, conflicts, neighborFn) {
+function verticalAlignment(g, layering, conflicts, neighborFn) {
   const root = {}
   const align = {}
   const pos = {}
@@ -169,11 +173,17 @@ function verticalAlignment (g, layering, conflicts, neighborFn) {
     _.forEach(layer, function (v) {
       let ws = neighborFn(v)
       if (ws.length) {
-        ws = _.sortBy(ws, function (w) { return pos[w] })
+        ws = _.sortBy(ws, function (w) {
+          return pos[w]
+        })
         const mp = (ws.length - 1) / 2
         for (let i = Math.floor(mp), il = Math.ceil(mp); i <= il; ++i) {
           const w = ws[i]
-          if (align[v] === v && prevIdx < pos[w] && !hasConflict(conflicts, v, w)) {
+          if (
+            align[v] === v &&
+            prevIdx < pos[w] &&
+            !hasConflict(conflicts, v, w)
+          ) {
             align[w] = v
             align[v] = root[v] = root[w]
             prevIdx = pos[w]
@@ -186,7 +196,7 @@ function verticalAlignment (g, layering, conflicts, neighborFn) {
   return { root: root, align: align }
 }
 
-function horizontalCompaction (g, layering, root, align, reverseSep) {
+function horizontalCompaction(g, layering, root, align, reverseSep) {
   // This portion of the algorithm differs from BK due to a number of problems.
   // Instead of their algorithm we construct a new block graph and do two
   // sweeps. The first sweep places blocks with the smallest possible
@@ -197,26 +207,34 @@ function horizontalCompaction (g, layering, root, align, reverseSep) {
 
   // First pass, assign smallest coordinates via DFS
   const visited = {}
-  function pass1 (v) {
+  function pass1(v) {
     if (!_.has(visited, v)) {
       visited[v] = true
-      xs[v] = _.reduce(blockG.inEdges(v), function (max, e) {
-        pass1(e.v)
-        return Math.max(max, xs[e.v] + blockG.edge(e))
-      }, 0)
+      xs[v] = _.reduce(
+        blockG.inEdges(v),
+        function (max, e) {
+          pass1(e.v)
+          return Math.max(max, xs[e.v] + blockG.edge(e))
+        },
+        0
+      )
     }
   }
   _.forEach(blockG.nodes(), pass1)
 
   const borderType = reverseSep ? 'borderLeft' : 'borderRight'
-  function pass2 (v) {
+  function pass2(v) {
     if (visited[v] !== 2) {
       visited[v]++
       const node = g.node(v)
-      const min = _.reduce(blockG.outEdges(v), function (min, e) {
-        pass2(e.w)
-        return Math.min(min, xs[e.w] - blockG.edge(e))
-      }, Number.POSITIVE_INFINITY)
+      const min = _.reduce(
+        blockG.outEdges(v),
+        function (min, e) {
+          pass2(e.w)
+          return Math.min(min, xs[e.w] - blockG.edge(e))
+        },
+        Number.POSITIVE_INFINITY
+      )
       if (min !== Number.POSITIVE_INFINITY && node.borderType !== borderType) {
         xs[v] = Math.max(xs[v], min)
       }
@@ -232,7 +250,7 @@ function horizontalCompaction (g, layering, root, align, reverseSep) {
   return xs
 }
 
-function buildBlockGraph (g, layering, root, reverseSep) {
+function buildBlockGraph(g, layering, root, reverseSep) {
   const blockGraph = new Graph()
   const graphLabel = g.graph()
   const sepFn = sep(graphLabel.nodesep, graphLabel.edgesep, reverseSep)
@@ -257,10 +275,16 @@ function buildBlockGraph (g, layering, root, reverseSep) {
 /*
  * Returns the alignment that has the smallest width of the given alignments.
  */
-function findSmallestWidthAlignment (g, xss) {
+function findSmallestWidthAlignment(g, xss) {
   return _.minBy(_.values(xss), function (xs) {
-    const min = (_.minBy(_.toPairs(xs), (pair) => pair[1] - width(g, pair[0]) / 2) || ['k', 0])[1]
-    const max = (_.maxBy(_.toPairs(xs), (pair) => pair[1] + width(g, pair[0]) / 2) || ['k', 0])[1]
+    const min = (_.minBy(
+      _.toPairs(xs),
+      (pair) => pair[1] - width(g, pair[0]) / 2
+    ) || ['k', 0])[1]
+    const max = (_.maxBy(
+      _.toPairs(xs),
+      (pair) => pair[1] + width(g, pair[0]) / 2
+    ) || ['k', 0])[1]
     return max - min
   })
 }
@@ -272,7 +296,7 @@ function findSmallestWidthAlignment (g, xss) {
  * alignments have their maximum coordinate at the same point as the maximum
  * coordinate of the smallest width alignment.
  */
-function alignCoordinates (xss, alignTo) {
+function alignCoordinates(xss, alignTo) {
   const alignToVals = _.values(alignTo)
   const alignToMin = _.min(alignToVals)
   const alignToMax = _.max(alignToVals)
@@ -285,15 +309,18 @@ function alignCoordinates (xss, alignTo) {
         return
       }
       const xsVals = _.values(xs)
-      const delta = horiz === 'l' ? alignToMin - _.min(xsVals) : alignToMax - _.max(xsVals)
+      const delta =
+        horiz === 'l' ? alignToMin - _.min(xsVals) : alignToMax - _.max(xsVals)
       if (delta) {
-        xss[alignment] = _.mapValues(xs, function (x) { return x + delta })
+        xss[alignment] = _.mapValues(xs, function (x) {
+          return x + delta
+        })
       }
     })
   })
 }
 
-function balance (xss, align) {
+function balance(xss, align) {
   return _.mapValues(xss.ul, function (ignore, v) {
     if (align) {
       return xss[align.toLowerCase()][v]
@@ -304,9 +331,12 @@ function balance (xss, align) {
   })
 }
 
-export function positionX (g) {
+export function positionX(g) {
   const layering = util.buildLayerMatrix(g)
-  const conflicts = _.merge(findType1Conflicts(g, layering), findType2Conflicts(g, layering))
+  const conflicts = _.merge(
+    findType1Conflicts(g, layering),
+    findType2Conflicts(g, layering)
+  )
 
   const xss = {}
   let adjustedLayering
@@ -320,12 +350,23 @@ export function positionX (g) {
       }
 
       const neighborFn = (vert === 'u' ? g.predecessors : g.successors).bind(g)
-      const align = verticalAlignment(g, adjustedLayering, conflicts, neighborFn)
-      let xs = horizontalCompaction(g, adjustedLayering,
-        align.root, align.align,
-        horiz === 'r')
+      const align = verticalAlignment(
+        g,
+        adjustedLayering,
+        conflicts,
+        neighborFn
+      )
+      let xs = horizontalCompaction(
+        g,
+        adjustedLayering,
+        align.root,
+        align.align,
+        horiz === 'r'
+      )
       if (horiz === 'r') {
-        xs = _.mapValues(xs, function (x) { return -x })
+        xs = _.mapValues(xs, function (x) {
+          return -x
+        })
       }
       xss[vert + horiz] = xs
     })
@@ -336,7 +377,7 @@ export function positionX (g) {
   return balance(xss, g.graph().align)
 }
 
-function sep (nodeSep, edgeSep, reverseSep) {
+function sep(nodeSep, edgeSep, reverseSep) {
   return function (g, v, w) {
     const vLabel = g.node(v)
     const wLabel = g.node(w)
@@ -346,8 +387,12 @@ function sep (nodeSep, edgeSep, reverseSep) {
     sum += vLabel.width / 2
     if (_.has(vLabel, 'labelpos')) {
       switch (vLabel.labelpos.toLowerCase()) {
-        case 'l': delta = -vLabel.width / 2; break
-        case 'r': delta = vLabel.width / 2; break
+        case 'l':
+          delta = -vLabel.width / 2
+          break
+        case 'r':
+          delta = vLabel.width / 2
+          break
       }
     }
     if (delta) {
@@ -361,8 +406,12 @@ function sep (nodeSep, edgeSep, reverseSep) {
     sum += wLabel.width / 2
     if (_.has(wLabel, 'labelpos')) {
       switch (wLabel.labelpos.toLowerCase()) {
-        case 'l': delta = wLabel.width / 2; break
-        case 'r': delta = -wLabel.width / 2; break
+        case 'l':
+          delta = wLabel.width / 2
+          break
+        case 'r':
+          delta = -wLabel.width / 2
+          break
       }
     }
     if (delta) {
@@ -374,7 +423,7 @@ function sep (nodeSep, edgeSep, reverseSep) {
   }
 }
 
-function width (g, v) {
+function width(g, v) {
   return g.node(v).width
 }
 
@@ -388,5 +437,5 @@ export default {
   horizontalCompaction: horizontalCompaction,
   alignCoordinates: alignCoordinates,
   findSmallestWidthAlignment: findSmallestWidthAlignment,
-  balance: balance
+  balance: balance,
 }

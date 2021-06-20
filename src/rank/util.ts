@@ -21,19 +21,22 @@ import * as _ from '../util-lodash'
  *
  *    1. Each node will be assign an (unnormalized) "rank" property.
  */
-export function longestPath (g) {
+export function longestPath(g) {
   const visited = {}
 
-  function dfs (v) {
+  function dfs(v) {
     const label = g.node(v)
     if (_.has(visited, v)) {
       return label.rank
     }
     visited[v] = true
 
-    const rank = _.min(_.map(g.outEdges(v), function (e) {
-      return dfs(e.w) - g.edge(e).minlen
-    })) || 0
+    const rank =
+      _.min(
+        _.map(g.outEdges(v), function (e) {
+          return dfs(e.w) - g.edge(e).minlen
+        })
+      ) || 0
 
     return (label.rank = rank)
   }
@@ -45,11 +48,11 @@ export function longestPath (g) {
  * Returns the amount of slack for the given edge. The slack is defined as the
  * difference between the length of the edge and its minimum length.
  */
-export function slack (g, e) {
+export function slack(g, e) {
   return g.node(e.w).rank - g.node(e.v).rank - g.edge(e).minlen
 }
 
 export default {
   longestPath: longestPath,
-  slack: slack
+  slack: slack,
 }

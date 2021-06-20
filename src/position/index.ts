@@ -3,7 +3,7 @@ import * as _ from '../util-lodash'
 import util from '../util'
 import { positionX } from './bk'
 
-function position (g) {
+function position(g) {
   g = util.asNonCompoundGraph(g)
 
   positionY(g)
@@ -12,12 +12,16 @@ function position (g) {
   })
 }
 
-function positionY (g) {
+function positionY(g) {
   const layering = util.buildLayerMatrix(g)
   const rankSep = g.graph().ranksep
   let prevY = 0
   _.forEach(layering, function (layer) {
-    const maxHeight = _.max(_.map(layer, function (v) { return g.node(v).height }))
+    const maxHeight = _.max(
+      _.map(layer, function (v) {
+        return g.node(v).height
+      })
+    )
     _.forEach(layer, function (v) {
       g.node(v).y = prevY + maxHeight / 2
     })

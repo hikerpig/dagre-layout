@@ -4,7 +4,7 @@ import { Graph } from 'graphlibrary'
 import util from './util'
 
 /* istanbul ignore next */
-function debugOrdering (g) {
+function debugOrdering(g) {
   const layerMatrix = util.buildLayerMatrix(g)
 
   const h = new Graph({ compound: true, multigraph: true }).setGraph({})
@@ -31,5 +31,5 @@ function debugOrdering (g) {
 }
 
 export default {
-  debugOrdering
+  debugOrdering,
 }

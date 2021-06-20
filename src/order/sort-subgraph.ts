@@ -4,7 +4,7 @@ import barycenter from './barycenter'
 import resolveConflicts from './resolve-conflicts'
 import sort from './sort'
 
-function sortSubgraph (g, v, cg, biasRight) {
+function sortSubgraph(g, v, cg, biasRight) {
   let movable = g.children(v)
   const node = g.node(v)
   const bl = node ? node.borderLeft : undefined
@@ -42,8 +42,9 @@ function sortSubgraph (g, v, cg, biasRight) {
         result.barycenter = 0
         result.weight = 0
       }
-      result.barycenter = (result.barycenter * result.weight +
-                           blPred.order + brPred.order) / (result.weight + 2)
+      result.barycenter =
+        (result.barycenter * result.weight + blPred.order + brPred.order) /
+        (result.weight + 2)
       result.weight += 2
     }
   }
@@ -51,22 +52,24 @@ function sortSubgraph (g, v, cg, biasRight) {
   return result
 }
 
-function expandSubgraphs (entries, subgraphs) {
+function expandSubgraphs(entries, subgraphs) {
   _.forEach(entries, function (entry) {
-    entry.vs = _.flatten(entry.vs.map(function (v) {
-      if (subgraphs[v]) {
-        return subgraphs[v].vs
-      }
-      return v
-    }))
+    entry.vs = _.flatten(
+      entry.vs.map(function (v) {
+        if (subgraphs[v]) {
+          return subgraphs[v].vs
+        }
+        return v
+      })
+    )
   })
 }
 
-function mergeBarycenters (target, other) {
+function mergeBarycenters(target, other) {
   if (!_.isUndefined(target.barycenter)) {
-    target.barycenter = (target.barycenter * target.weight +
-                         other.barycenter * other.weight) /
-                        (target.weight + other.weight)
+    target.barycenter =
+      (target.barycenter * target.weight + other.barycenter * other.weight) /
+      (target.weight + other.weight)
     target.weight += other.weight
   } else {
     target.barycenter = other.barycenter

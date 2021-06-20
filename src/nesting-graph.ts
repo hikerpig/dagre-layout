@@ -25,7 +25,7 @@ import util from './util'
  * The nesting graph idea comes from Sander, "Layout of Compound Directed
  * Graphs."
  */
-function run (g) {
+function run(g) {
   const root = util.addDummyNode(g, 'root', {}, '_root')
   const depths = treeDepths(g)
   const height = Math.max.apply(null, _.values(depths)) - 1
@@ -34,7 +34,9 @@ function run (g) {
   g.graph().nestingRoot = root
 
   // Multiply minlen by nodeSep to align nodes on non-border ranks.
-  _.forEach(g.edges(), function (e) { g.edge(e).minlen *= nodeSep })
+  _.forEach(g.edges(), function (e) {
+    g.edge(e).minlen *= nodeSep
+  })
 
   // Calculate a weight that is sufficient to keep subgraphs vertically compact
   const weight = sumWeights(g) + 1
@@ -49,7 +51,7 @@ function run (g) {
   g.graph().nodeRankFactor = nodeSep
 }
 
-function dfs (g, root, nodeSep, weight, height, depths, v) {
+function dfs(g, root, nodeSep, weight, height, depths, v) {
   const children = g.children(v)
   if (!children.length) {
     if (v !== root) {
@@ -79,13 +81,13 @@ function dfs (g, root, nodeSep, weight, height, depths, v) {
     g.setEdge(top, childTop, {
       weight: thisWeight,
       minlen: minlen,
-      nestingEdge: true
+      nestingEdge: true,
     })
 
     g.setEdge(childBottom, bottom, {
       weight: thisWeight,
       minlen: minlen,
-      nestingEdge: true
+      nestingEdge: true,
     })
   })
 
@@ -94,9 +96,9 @@ function dfs (g, root, nodeSep, weight, height, depths, v) {
   }
 }
 
-function treeDepths (g) {
+function treeDepths(g) {
   const depths = {}
-  function dfs (v, depth) {
+  function dfs(v, depth) {
     const children = g.children(v)
     if (children && children.length) {
       _.forEach(children, function (child) {
@@ -105,17 +107,23 @@ function treeDepths (g) {
     }
     depths[v] = depth
   }
-  _.forEach(g.children(), function (v) { dfs(v, 1) })
+  _.forEach(g.children(), function (v) {
+    dfs(v, 1)
+  })
   return depths
 }
 
-function sumWeights (g) {
-  return _.reduce(g.edges(), function (acc, e) {
-    return acc + g.edge(e).weight
-  }, 0)
+function sumWeights(g) {
+  return _.reduce(
+    g.edges(),
+    function (acc, e) {
+      return acc + g.edge(e).weight
+    },
+    0
+  )
 }
 
-function cleanup (g) {
+function cleanup(g) {
   const graphLabel = g.graph()
   g.removeNode(graphLabel.nestingRoot)
   delete graphLabel.nestingRoot
@@ -129,5 +137,5 @@ function cleanup (g) {
 
 export default {
   run,
-  cleanup
+  cleanup,
 }
