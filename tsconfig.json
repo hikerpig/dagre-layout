@@ -6,13 +6,18 @@
     "declaration": true,
     "sourceMap": true,
     "composite": true,
-    "strict": true,
     "moduleResolution": "node",
     "baseUrl": "./",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowJs": true,
-    "forceConsistentCasingInFileNames": true
+    "checkJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "outDir": "dist",
+    "paths": {
+      "lib": ["./lib"]
+    }
   },
   "include": [
     "lib"

@@ -1,6 +1,10 @@
 import path from 'path'
 import nodeExternals from 'webpack-node-externals'
 
+const PATH_ALIASES = {
+  lib: path.resolve(__dirname, 'lib')
+}
+
 export const config = {
   mode: 'development',
   target: 'web',
@@ -13,6 +17,9 @@ export const config = {
     library: 'dagre',
     libraryTarget: 'umd',
     libraryExport: 'default'
+  },
+  resolve: {
+    alias: PATH_ALIASES,
   },
   module: {
     rules: [
@@ -44,6 +51,9 @@ export const coreConfig = {
     path: path.join(__dirname, 'dist'),
     filename: '[name].core.js',
     libraryTarget: 'commonjs2'
+  },
+  resolve: {
+    alias: PATH_ALIASES,
   },
   module: {
     rules: [
