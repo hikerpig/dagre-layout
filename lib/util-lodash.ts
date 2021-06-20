@@ -12,9 +12,17 @@ import has from 'lodash/has'
 import last from 'lodash/last'
 import isUndefined from 'lodash/isUndefined'
 import minBy from 'lodash/minBy'
+import maxBy from 'lodash/maxBy'
+import min from 'lodash/min'
+import max from 'lodash/max'
 import filter from 'lodash/filter'
 import chain from 'lodash/chain'
 import uniqueId from 'lodash/uniqueId'
+import zipObject from 'lodash/zipObject'
+import sortBy from 'lodash/sortBy'
+import find from 'lodash/find'
+import toPairs from 'lodash/toPairs'
+import cloneDeep from 'lodash/cloneDeep'
 
 export {
   forEach,
@@ -31,7 +39,15 @@ export {
   last,
   isUndefined,
   minBy,
+  maxBy,
+  min,
+  max,
   filter,
   chain,
   uniqueId,
+  zipObject,
+  sortBy,
+  find,
+  toPairs,
+  cloneDeep,
 }
