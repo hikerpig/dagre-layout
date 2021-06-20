@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import crossCount from '../../lib/order/cross-count'
+import crossCount from '../../src/order/cross-count'
 
 describe('crossCount', function () {
   let g

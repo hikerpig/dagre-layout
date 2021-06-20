@@ -4,9 +4,9 @@
 <title>Dagre Debug Console</title>
 
 <script src="../dist/dagre-layout.js"></script>
-<script src="http://dagrejs.github.io/project/graphlib-dot/latest/graphlib-dot.js"></script>
+<script src="http://dagrejs.github.io/project/graphsrc-dot/latest/graphsrc-dot.js"></script>
 <script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.5/lodash.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/srcs/lodash.js/4.17.5/lodash.js"></script>
 
 <style>
 body {
@@ -106,7 +106,7 @@ function renderDot () {
     lastDotStr = dotStr
     input.className = ''
     try {
-      const g = time('DOT parsing', function () { return graphlibDot.read(dotStr) })
+      const g = time('DOT parsing', function () { return graphsrcDot.read(dotStr) })
       time('render', function () { render(g) })
     } catch (e) {
       input.className = 'error'

@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import feasibleTree from '../../lib/rank/feasible-tree'
+import feasibleTree from '../../src/rank/feasible-tree'
 
 describe('feasibleTree', function () {
   it('creates a tree for a trivial input graph', function () {

@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import { expect } from 'chai'
 
-import sort from '../../lib/order/sort'
+import sort from '../../src/order/sort'
 
 describe('sort', function () {
   it('sorts nodes by barycenter', function () {

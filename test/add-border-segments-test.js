@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import addBorderSegments from '../lib/add-border-segments'
+import addBorderSegments from '../src/add-border-segments'
 
 describe('addBorderSegments', function () {
   let g

@@ -1,25 +1,25 @@
 {
   "compilerOptions": {
-    "incremental": true,
     "target": "es2019",
     "module": "es6",
     "declaration": true,
-    "sourceMap": true,
-    "composite": true,
+    "sourceMap": false,
     "moduleResolution": "node",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "allowJs": true,
     "checkJs": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
+    "importHelpers": true,
     "outDir": "dist",
     "paths": {
-      "lib": ["./lib"]
+      "src/*": ["./src"]
     }
   },
   "include": [
-    "lib"
+    "src"
   ]
 }

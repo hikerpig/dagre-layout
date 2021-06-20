@@ -3,9 +3,9 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import networkSimplex from '../../lib/rank/network-simplex'
-import { longestPath } from '../../lib/rank/util'
-import { normalizeRanks } from '../../lib/util'
+import networkSimplex from '../../src/rank/network-simplex'
+import { longestPath } from '../../src/rank/util'
+import { normalizeRanks } from '../../src/util'
 
 const initLowLimValues = networkSimplex.initLowLimValues
 const initCutValues = networkSimplex.initCutValues

@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import rank from '../../lib/rank'
+import rank from '../../src/rank'
 
 describe('rank', function () {
   const RANKERS = [

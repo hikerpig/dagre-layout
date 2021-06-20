@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { Graph, alg } from 'graphlibrary'
 import { expect } from 'chai'
 
-import acyclic from '../lib/acyclic'
+import acyclic from '../src/acyclic'
 
 const { findCycles } = alg
 

@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import initOrder from '../../lib/order/init-order'
+import initOrder from '../../src/order/init-order'
 
 describe('order/initOrder', function () {
   let g

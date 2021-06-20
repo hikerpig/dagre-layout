@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import util from '../lib/util'
+import util from '../src/util'
 
 describe('util', function () {
   describe('simplify', function () {

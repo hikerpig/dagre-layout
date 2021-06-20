@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import buildLayerGraph from '../../lib/order/build-layer-graph'
+import buildLayerGraph from '../../src/order/build-layer-graph'
 
 describe('order/buildLayerGraph', function () {
   let g

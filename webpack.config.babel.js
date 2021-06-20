@@ -1,11 +1,11 @@
-import path from 'path'
-import nodeExternals from 'webpack-node-externals'
+const path = require('path')
+const nodeExternals = require('webpack-node-externals')
 
 const PATH_ALIASES = {
   lib: path.resolve(__dirname, 'lib')
 }
 
-export const config = {
+const config = {
   mode: 'development',
   target: 'web',
   entry: {
@@ -28,11 +28,6 @@ export const config = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: {
-            presets: [
-              ['env', { targets: { browsers: ['last 3 versions'] } }]
-            ]
-          }
         }
       }
     ]
@@ -40,7 +35,7 @@ export const config = {
   devtool: 'source-map'
 }
 
-export const coreConfig = {
+const coreConfig = {
   mode: 'development',
   target: 'node',
   entry: {
@@ -69,4 +64,5 @@ export const coreConfig = {
   devtool: 'source-map'
 }
 
-export default [config, coreConfig]
+// export default [config, coreConfig]
+module.exports = [config, coreConfig]

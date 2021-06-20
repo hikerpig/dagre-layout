@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import parentDummyChains from '../lib/parent-dummy-chains'
+import parentDummyChains from '../src/parent-dummy-chains'
 
 describe('parentDummyChains', function () {
   let g

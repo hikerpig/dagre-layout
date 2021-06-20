@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import normalize from '../lib/normalize'
+import normalize from '../src/normalize'
 
 describe('normalize', function () {
   let g

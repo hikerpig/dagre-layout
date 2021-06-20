@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import { expect } from 'chai'
 
-import List from '../../lib/data/list'
+import List from '../../src/data/list'
 
 describe('data.List', function () {
   let list

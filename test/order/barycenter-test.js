@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import barycenter from '../../lib/order/barycenter'
+import barycenter from '../../src/order/barycenter'
 
 describe('order/barycenter', function () {
   let g

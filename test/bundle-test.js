@@ -5,7 +5,7 @@
 
 const expect = window.chai.expect
 const dagre = window.dagre
-const graphlib = window.graphlib
+const graphsrc = window.graphsrc
 
 describe('bundle', function () {
   it('exports dagre', function () {
@@ -14,7 +14,7 @@ describe('bundle', function () {
   })
 
   it('can do trivial layout', function () {
-    const g = new graphlib.Graph().setGraph({})
+    const g = new graphsrc.Graph().setGraph({})
     g.setNode('a', { label: 'a', width: 50, height: 100 })
     g.setNode('b', { label: 'b', width: 50, height: 100 })
     g.setEdge('a', 'b', { label: 'ab', width: 50, height: 100 })

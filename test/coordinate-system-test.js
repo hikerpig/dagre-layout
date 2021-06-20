@@ -2,7 +2,7 @@
 import { Graph } from 'graphlibrary'
 import { expect } from 'chai'
 
-import coordinateSystem from '../lib/coordinate-system'
+import coordinateSystem from '../src/coordinate-system'
 
 describe('coordinateSystem', function () {
   let g

@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import position from '../lib/position'
+import position from '../src/position'
 
 describe('position', function () {
   let g

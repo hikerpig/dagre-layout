@@ -2,7 +2,7 @@
 import { expect } from 'chai'
 import { Graph, alg } from 'graphlibrary'
 
-import nestingGraph from '../lib/nesting-graph'
+import nestingGraph from '../src/nesting-graph'
 
 const components = alg.components
 

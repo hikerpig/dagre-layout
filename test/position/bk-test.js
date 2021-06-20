@@ -3,8 +3,8 @@ import _ from 'lodash'
 import { Graph } from 'graphlibrary'
 import { expect } from 'chai'
 
-import { buildLayerMatrix } from '../../lib/util'
-import bk from '../../lib/position/bk'
+import { buildLayerMatrix } from '../../src/util'
+import bk from '../../src/position/bk'
 
 const findType1Conflicts = bk.findType1Conflicts
 const findType2Conflicts = bk.findType2Conflicts

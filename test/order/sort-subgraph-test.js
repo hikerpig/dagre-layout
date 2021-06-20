@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import sortSubgraph from '../../lib/order/sort-subgraph'
+import sortSubgraph from '../../src/order/sort-subgraph'
 
 describe('order/sortSubgraph', function () {
   let g

@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph, alg } from 'graphlibrary'
 
-import greedyFAS from '../lib/greedy-fas'
+import greedyFAS from '../src/greedy-fas'
 
 const { findCycles } = alg
 

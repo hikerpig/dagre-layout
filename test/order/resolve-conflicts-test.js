@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph } from 'graphlibrary'
 
-import resolveConflicts from '../../lib/order/resolve-conflicts'
+import resolveConflicts from '../../src/order/resolve-conflicts'
 
 describe('order/resolveConflicts', function () {
   let cg
