@@ -1,9 +1,0 @@
-dist: trusty
-language: node_js
-node_js:
-  - "9"
-script:
-  - yarn format
-  - yarn jest
-after_success:
-  - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
