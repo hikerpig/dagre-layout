@@ -1,8 +1,14 @@
 {
-  "name": "dagre-layout",
+  "name": "@pintora/dagre",
   "version": "0.8.8",
   "description": "Graph layout for JavaScript",
-  "author": "Tyler Long <tyler4long@gmail.com>",
+  "author": "Hikerpig <hikerpigwinnie@gmail.com>",
+  "contributors": [
+    {
+      "name": "Tyler Long",
+      "email": "tyler4long@gmail.com"
+    }
+  ],
   "module": "dist/dagre-layout.js",
   "umd": "dist/dagre-layout.umd.js",
   "keywords": [
@@ -57,7 +63,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tylingsoft/dagre-layout.git"
+    "url": "https://github.com/hikerpig/dagre-layout.git"
   },
   "license": "MIT",
   "files": [
