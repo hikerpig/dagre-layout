@@ -334,7 +334,7 @@ function balance(xss, align) {
 
 export function positionX(g) {
   const layering = util.buildLayerMatrix(g)
-  const conflicts = _.merge(
+  const conflicts = Object.assign(
     findType1Conflicts(g, layering),
     findType2Conflicts(g, layering)
   )

@@ -175,7 +175,7 @@ function buildLayoutGraph(inputGraph) {
   const graph = canonicalize(inputGraph.graph())
 
   g.setGraph(
-    _.merge(
+    Object.assign(
       {},
       graphDefaults,
       selectNumberAttrs(graph, graphNumAttrs),
@@ -196,7 +196,7 @@ function buildLayoutGraph(inputGraph) {
     const edge = canonicalize(inputGraph.edge(e))
     g.setEdge(
       e,
-      _.merge(
+      Object.assign(
         {},
         edgeDefaults,
         selectNumberAttrs(edge, edgeNumAttrs),

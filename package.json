@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "graphlibrary": "^2.2.0",
-    "lodash": "^4.17.5"
+    "lodash-es": "^4.17.21"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
@@ -42,7 +42,7 @@
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/jest": "^26.0.23",
-    "@types/lodash": "^4.14.170",
+    "@types/lodash-es": "^4.17.4",
     "benchmark": "^2.1.4",
     "chai": "^4.1.2",
     "coveralls": "^3.0.0",

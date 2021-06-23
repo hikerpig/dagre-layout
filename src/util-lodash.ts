@@ -1,33 +1,41 @@
-import forEach from 'lodash/forEach'
-import pick from 'lodash/pick'
-import defaults from 'lodash/defaults'
-import merge from 'lodash/merge'
-import mapValues from 'lodash/mapValues'
-import map from 'lodash/map'
-import flatten from 'lodash/flatten'
-import range from 'lodash/range'
-import values from 'lodash/values'
-import reduce from 'lodash/reduce'
-import has from 'lodash/has'
-import last from 'lodash/last'
-import isUndefined from 'lodash/isUndefined'
-import minBy from 'lodash/minBy'
-import maxBy from 'lodash/maxBy'
-import min from 'lodash/min'
-import max from 'lodash/max'
-import filter from 'lodash/filter'
-import uniqueId from 'lodash/uniqueId'
-import zipObject from 'lodash/zipObject'
-import sortBy from 'lodash/sortBy'
-import find from 'lodash/find'
-import toPairs from 'lodash/toPairs'
-import cloneDeep from 'lodash/cloneDeep'
+import forEach from 'lodash-es/forEach'
+import pick from 'lodash-es/pick'
+import defaults from 'lodash-es/defaults'
+import mapValues from 'lodash-es/mapValues'
+import map from 'lodash-es/map'
+import flatten from 'lodash-es/flatten'
+import range from 'lodash-es/range'
+import values from 'lodash-es/values'
+import reduce from 'lodash-es/reduce'
+import minBy from 'lodash-es/minBy'
+import maxBy from 'lodash-es/maxBy'
+import min from 'lodash-es/min'
+import max from 'lodash-es/max'
+import filter from 'lodash-es/filter'
+import uniqueId from 'lodash-es/uniqueId'
+import zipObject from 'lodash-es/zipObject'
+import sortBy from 'lodash-es/sortBy'
+import find from 'lodash-es/find'
+import toPairs from 'lodash-es/toPairs'
+import cloneDeep from 'lodash-es/cloneDeep'
+
+function has<T>(o: T, k: string) {
+  return o && k && (k in o)
+}
+
+function last<T>(list: T[]) {
+  if (!(list && list.length)) return
+  return list[list.length - 1]
+}
+
+function isUndefined(o) {
+  return typeof o === 'undefined'
+}
 
 export {
   forEach,
   pick,
   defaults,
-  merge,
   mapValues,
   map,
   flatten,
