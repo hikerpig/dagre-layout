@@ -70,6 +70,7 @@
     "dist/",
     "index.js"
   ],
+  "types": "dist/types/index.d.ts",
   "jest": {
     "testRegex": "test/.+?-test\\.js",
     "testPathIgnorePatterns": [
