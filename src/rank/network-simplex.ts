@@ -1,5 +1,5 @@
 import * as _ from '../util-lodash'
-import { alg } from 'graphlibrary'
+import { alg } from '@pintora/graphlib'
 
 import feasibleTree from './feasible-tree'
 import { slack, longestPath as initRank } from './util'

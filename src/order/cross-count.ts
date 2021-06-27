@@ -1,4 +1,4 @@
-import { Graph } from 'graphlibrary'
+import { Graph } from '@pintora/graphlib'
 import * as _ from '../util-lodash'
 
 /*

@@ -1,5 +1,5 @@
 import * as _ from './util-lodash'
-import { Graph } from 'graphlibrary'
+import { Graph } from '@pintora/graphlib'
 
 import acyclic from './acyclic'
 import normalize from './normalize'

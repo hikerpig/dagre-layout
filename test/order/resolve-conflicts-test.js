@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import _ from 'lodash'
 import { expect } from 'chai'
-import { Graph } from 'graphlibrary'
+import { Graph } from '@pintora/graphlib'
 
 import resolveConflicts from '../../src/order/resolve-conflicts'
 

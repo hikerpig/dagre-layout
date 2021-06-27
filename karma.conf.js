@@ -11,7 +11,7 @@ export default function (config) {
     // list of files / patterns to load in the browser
     files: [
       'node_modules/chai/chai.js',
-      'node_modules/graphlibrary/dist/graphlib.js',
+      'node_modules/@pintora/graphlib/dist/graphlib.js',
       'dist/dagre-layout.umd.js',
       'test/e2e/bundle-test.js'
     ],

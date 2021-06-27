@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import { expect } from 'chai'
-import { Graph } from 'graphlibrary'
+import { Graph } from '@pintora/graphlib'
 
 import parentDummyChains from '../src/parent-dummy-chains'
 

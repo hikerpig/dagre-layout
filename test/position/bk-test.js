@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import _ from 'lodash'
-import { Graph } from 'graphlibrary'
+import { Graph } from '@pintora/graphlib'
 import { expect } from 'chai'
 
 import { buildLayerMatrix } from '../../src/util'

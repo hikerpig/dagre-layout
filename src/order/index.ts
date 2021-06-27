@@ -1,5 +1,5 @@
 import * as _ from '../util-lodash'
-import { Graph } from 'graphlibrary'
+import { Graph } from '@pintora/graphlib'
 
 import initOrder from './init-order'
 import crossCount from './cross-count'

@@ -1,5 +1,5 @@
 import * as _ from '../util-lodash'
-import { Graph } from 'graphlibrary'
+import { Graph } from '@pintora/graphlib'
 
 /*
  * Constructs a graph that can be used to sort a layer of nodes. The graph will
