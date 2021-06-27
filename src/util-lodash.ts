@@ -20,7 +20,7 @@ import toPairs from 'lodash-es/toPairs'
 import cloneDeep from 'lodash-es/cloneDeep'
 
 function has<T>(o: T, k: string) {
-  return o && k && (k in o)
+  return Boolean(o && k && (k in o))
 }
 
 function last<T>(list: T[]) {
