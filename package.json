@@ -26,8 +26,7 @@
     "build": "NODE_ENV=production yarn rollup -c",
     "typecheck": "yarn tsc --noEmit",
     "watch": "yarn build --watch",
-    "upgrade": "yarn-upgrade-all",
-    "prepublishOnly": "yarn release"
+    "upgrade": "yarn-upgrade-all"
   },
   "dependencies": {
     "@pintora/graphlib": "^2.2.0",
