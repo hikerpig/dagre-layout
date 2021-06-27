@@ -1140,10 +1140,10 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@pintora/graphlib@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/@pintora/graphlib/-/graphlib-2.2.0.tgz#5b63250397c2e3c2afe9613f3de9ad0cff3e52d3"
-  integrity sha512-nes+MLpNo6bYo8rF/rezXJOA2GjG0U32QcjoInUDhViUA6pvQPYeFGA6dyFB0v7bhvidHVgSNlfutW58AJIeOQ==
+"@pintora/graphlib@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.npmjs.org/@pintora/graphlib/-/graphlib-2.2.1.tgz#7c20631183210178d7f3e8d78f64c7304210f59b"
+  integrity sha512-lol0DhoZqC45WwHLme6zbyCZZyRKzOEtdLZaaZDgsIRWfQZsjugmeH9/GJ1q3idKmduoJk5L04iCbZ2ErOcScA==
   dependencies:
     lodash "^4.17.5"
     lodash-es "^4.17.21"
