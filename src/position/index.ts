@@ -2,28 +2,28 @@ import * as _ from '../util-lodash'
 
 import util from '../util'
 import { positionX } from './bk'
+import { GraphOpts } from '../type'
 
 function position(g) {
-  g = util.asNonCompoundGraph(g)
-
   positionY(g)
   _.forEach(positionX(g), function (x, v) {
-    g.node(v).x = x
+    const node = g.node(v)
+    if (node) node.x = x
   })
 }
 
 function positionY(g) {
   const layering = util.buildLayerMatrix(g)
-  const rankSep = g.graph().ranksep
+  const rankSep = (g.graph() as GraphOpts).ranksep
   let prevY = 0
   _.forEach(layering, function (layer) {
     const maxHeight = _.max(
       _.map(layer, function (v) {
-        return g.node(v).height
+        if (v) return g.node(v).height
       })
     )
     _.forEach(layer, function (v) {
-      g.node(v).y = prevY + maxHeight / 2
+      if (v) g.node(v).y = prevY + maxHeight / 2
     })
     prevY += maxHeight + rankSep
   })
