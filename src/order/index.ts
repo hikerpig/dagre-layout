@@ -76,9 +76,11 @@ function sweepLayerGraphs(layerGraphs, biasRight) {
 }
 
 function assignOrder(g, layering) {
-  _.forEach(layering, function (layer) {
+  layering.forEach(function (layer) {
     _.forEach(layer, function (v, i) {
-      g.node(v).order = i
+      if (v) {
+        g.node(v).order = i
+      }
     })
   })
 }

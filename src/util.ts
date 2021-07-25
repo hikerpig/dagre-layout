@@ -118,14 +118,14 @@ export function intersectRect(rect, point) {
  * Given a DAG with each node assigned "rank" and "order" properties, this
  * function will produce a matrix with the ids of each node.
  */
-export function buildLayerMatrix(g) {
+export function buildLayerMatrix(g: Graph): Array<string[]> {
   const layering = _.map(_.range(maxRank(g) + 1), function () {
     return []
   })
   _.forEach(g.nodes(), function (v) {
     const node = g.node(v)
     const rank = node.rank
-    if (!_.isUndefined(rank)) {
+    if (!_.isUndefined(rank) && typeof node.order === 'number') {
       layering[rank][node.order] = v
     }
   })

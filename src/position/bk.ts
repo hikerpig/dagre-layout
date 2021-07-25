@@ -39,6 +39,7 @@ function findType1Conflicts(g, layering) {
     const lastNode = _.last(layer)
 
     _.forEach(layer, function (v, i: number) {
+      if (!v) return
       const w = findOtherInnerSegmentNode(g, v)
       const k1 = w ? g.node(w).order : prevLayerLength
 
@@ -74,6 +75,7 @@ function findType2Conflicts(g, layering) {
     let v
     _.forEach(_.range(southPos, southEnd), function (i) {
       v = south[i]
+      if (!v) return
       if (g.node(v).dummy) {
         _.forEach(g.predecessors(v), function (u) {
           const uNode = g.node(u)
@@ -88,12 +90,13 @@ function findType2Conflicts(g, layering) {
     })
   }
 
-  function visitLayer(north, south) {
+  function visitLayer(north: string[], south: string[]) {
     let prevNorthPos = -1
     let nextNorthPos
     let southPos = 0
 
     _.forEach(south, function (v, southLookahead: number) {
+      if (!v) return
       if (g.node(v).dummy === 'border') {
         const predecessors = g.predecessors(v)
         if (predecessors.length) {
@@ -152,7 +155,7 @@ function hasConflict(conflicts, v, w) {
  * we're trying to form a block with, we also ignore that possibility - our
  * blocks would be split in that scenario.
  */
-function verticalAlignment(g, layering, conflicts, neighborFn) {
+function verticalAlignment(g: Graph, layering, conflicts, neighborFn) {
   const root = {}
   const align = {}
   const pos = {}
@@ -171,6 +174,7 @@ function verticalAlignment(g, layering, conflicts, neighborFn) {
   _.forEach(layering, function (layer) {
     let prevIdx = -1
     _.forEach(layer, function (v) {
+      if (!v) return
       let ws = neighborFn(v)
       if (ws.length) {
         ws = _.sortBy(ws, function (w) {
@@ -378,10 +382,11 @@ export function positionX(g) {
   return balance(xss, g.graph().align)
 }
 
-function sep(nodeSep, edgeSep, reverseSep) {
+function sep(nodeSep: number, edgeSep: number, reverseSep: boolean) {
   return function (g, v, w) {
     const vLabel = g.node(v)
     const wLabel = g.node(w)
+    if (!(vLabel && wLabel)) return 0
     let sum = 0
     let delta
 
@@ -425,7 +430,7 @@ function sep(nodeSep, edgeSep, reverseSep) {
 }
 
 function width(g, v): number {
-  return g.node(v).width
+  return g.node(v)?.width
 }
 
 export default {

@@ -1,3 +1,4 @@
+import { Edge, Graph } from '@pintora/graphlib'
 import * as _ from '../util-lodash'
 
 /*
@@ -38,7 +39,8 @@ export function longestPath(g) {
         })
       ) || 0
 
-    return (label.rank = rank)
+    label.rank = rank
+    return rank
   }
 
   _.forEach(g.sources(), dfs)
@@ -48,7 +50,7 @@ export function longestPath(g) {
  * Returns the amount of slack for the given edge. The slack is defined as the
  * difference between the length of the edge and its minimum length.
  */
-export function slack(g, e) {
+export function slack(g: Graph, e: Edge) {
   return g.node(e.w).rank - g.node(e.v).rank - g.edge(e).minlen
 }
 

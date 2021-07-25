@@ -12,7 +12,7 @@ import coordinateSystem from './coordinate-system'
 import order from './order'
 import position from './position'
 
-function layout(g, opts) {
+function layout(g, opts?: { debugTiming?: boolean }) {
   const time = opts && opts.debugTiming ? util.time : util.notime
   time('layout', function () {
     const layoutGraph = time('  buildLayoutGraph', function () {
@@ -41,7 +41,7 @@ function runLayout(g, time) {
     nestingGraph.run(g)
   })
   time('    rank', function () {
-    rank(util.asNonCompoundGraph(g))
+    rank(g)
   })
   time('    injectEdgeLabelProxies', function () {
     injectEdgeLabelProxies(g)
@@ -170,7 +170,7 @@ const edgeAttrs = ['labelpos']
  * layout graph. Thus this function serves as a good place to determine what
  * attributes can influence layout.
  */
-function buildLayoutGraph(inputGraph) {
+function buildLayoutGraph<T extends Graph>(inputGraph: T): T {
   const g = new Graph({ multigraph: true, compound: true })
   const graph = canonicalize(inputGraph.graph())
 
@@ -189,7 +189,7 @@ function buildLayoutGraph(inputGraph) {
       v,
       _.defaults(selectNumberAttrs(node, nodeNumAttrs), nodeDefaults)
     )
-    g.setParent(v, inputGraph.parent(v))
+    g.setParent(v, inputGraph.parent(v) as any)
   })
 
   _.forEach(inputGraph.edges(), function (e) {
@@ -205,7 +205,7 @@ function buildLayoutGraph(inputGraph) {
     )
   })
 
-  return g
+  return g as any
 }
 
 /*
@@ -414,11 +414,11 @@ function removeSelfEdges(g) {
   })
 }
 
-function insertSelfEdges(g) {
+function insertSelfEdges(g: Graph) {
   const layers = util.buildLayerMatrix(g)
-  _.forEach(layers, function (layer) {
+  layers.forEach(function (layer) {
     let orderShift = 0
-    _.forEach(layer, function (v, i) {
+    layer.forEach(function (v, i) {
       const node = g.node(v)
       node.order = i + orderShift
       _.forEach(node.selfEdges, function (selfEdge) {
