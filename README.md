@@ -1,6 +1,7 @@
 # dagre-layout - Graph layout for JavaScript
 
 [![Build Status](https://circleci.com/gh/hikerpig/dagre-layout.svg?style=shield)](https://circleci.com/gh/hikerpig/dagre-layout)
+[![codecov](https://codecov.io/gh/hikerpig/dagre-layout/branch/master/graph/badge.svg?token=BA06M96QIR)](https://codecov.io/gh/hikerpig/dagre-layout)
 
 This project is an out-of-box replacement for [dagre](https://github.com/dagrejs/dagre).
 
