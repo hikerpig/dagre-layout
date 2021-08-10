@@ -3,10 +3,11 @@
 <meta charset="utf-8">
 <title>Dagre Debug Console</title>
 
-<script src="../dist/dagre-layout.js"></script>
-<script src="http://dagrejs.github.io/project/graphsrc-dot/latest/graphsrc-dot.js"></script>
+<script src="../dist/dagre-layout.umd.js"></script>
+<!-- <script src="http://dagrejs.github.io/project/graphsrc-dot/latest/graphsrc-dot.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/@pintora/graphlib"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash"></script>
 <script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/srcs/lodash.js/4.17.5/lodash.js"></script>
 
 <style>
 body {
@@ -97,6 +98,8 @@ let debugTiming = false
 let time = dagre.util.notime
 let lastDotStr = ''
 const input = document.querySelector('#inputPanel textarea')
+document.addEventListener('DOMContentLoaded', renderDot)
+
 function renderDot () {
   debugTiming = d3.select('#timing').property('checked')
   time = debugTiming ? dagre.util.time : dagre.util.notime
@@ -106,13 +109,26 @@ function renderDot () {
     lastDotStr = dotStr
     input.className = ''
     try {
-      const g = time('DOT parsing', function () { return graphsrcDot.read(dotStr) })
+      const g = formGraph()
       time('render', function () { render(g) })
     } catch (e) {
       input.className = 'error'
       throw e
     }
   }
+}
+
+function formGraph() {
+  const g = new graphlib.Graph({ compound: true })
+    .setGraph({})
+
+  g.setNode('a', { label: 'a' })
+  g.setNode('b', { label: 'b' })
+  g.setNode('c', { label: 'c' })
+  g.setEdge('a', 'b', { label: 'ab' })
+  g.setParent('b', 'c')
+
+  return g
 }
 
 input.onkeydown = function (e) {
@@ -143,6 +159,7 @@ function preLayout (g, svg) {
     }
   })
 
+  console.log('nodes', g.nodes())
   _.forEach(g.nodes(), function (v) {
     if (g.children(v).length) {
       return
