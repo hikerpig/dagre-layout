@@ -1,6 +1,7 @@
 import { longestPath } from './util'
 import feasibleTree from './feasible-tree'
 import networkSimplex from './network-simplex'
+import { GraphData } from 'src/type'
 
 /*
  * Assigns a rank to each node in the input graph that respects the "minlen"
@@ -22,7 +23,7 @@ import networkSimplex from './network-simplex'
  *       fix them up later.
  */
 function rank(g) {
-  switch (g.graph().ranker) {
+  switch ((g.graph() as GraphData).ranker) {
     case 'network-simplex':
       networkSimplexRanker(g)
       break

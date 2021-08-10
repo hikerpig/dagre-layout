@@ -1,8 +1,8 @@
 import * as _ from './util-lodash'
-import { Graph } from '@pintora/graphlib'
+import { Graph, Edge } from '@pintora/graphlib'
 
 import List from './data/list'
-import { Entry } from './type'
+import { DEdge, Entry } from './type'
 
 /*
  * A greedy heuristic for finding a feedback arc set for a graph. A feedback
@@ -16,7 +16,7 @@ type WeightFn = (e: Entry) => number
 
 const DEFAULT_WEIGHT_FN: WeightFn = (e) => 1
 
-function greedyFAS(g, weightFn) {
+function greedyFAS(g: Graph, weightFn: WeightFn) {
   if (g.nodeCount() <= 1) {
     return []
   }
@@ -26,7 +26,7 @@ function greedyFAS(g, weightFn) {
   // Expand multi-edges
   return _.flatten(
     _.map(results, function (e) {
-      return g.outEdges(e.v, e.w)
+      return g.outEdges(e.v, e.w) as any[]
     })
   )
 }

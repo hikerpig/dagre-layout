@@ -11,6 +11,7 @@ import addBorderSegments from './add-border-segments'
 import coordinateSystem from './coordinate-system'
 import order from './order'
 import position from './position'
+import { DEdge, DNode, GraphData } from './type'
 
 function layout(g, opts?: { debugTiming?: boolean }) {
   const time = opts && opts.debugTiming ? util.time : util.notime
@@ -151,8 +152,15 @@ function updateInputGraph(inputGraph, layoutGraph) {
 const graphNumAttrs = ['nodesep', 'edgesep', 'ranksep', 'marginx', 'marginy']
 const graphDefaults = { ranksep: 50, edgesep: 20, nodesep: 50, rankdir: 'tb' }
 const graphAttrs = ['acyclicer', 'ranker', 'rankdir', 'align']
-const nodeNumAttrs = ['width', 'height']
-const nodeDefaults = { width: 0, height: 0 }
+const nodeNumAttrs = ['width', 'height', 'marginl', 'marginr', 'margint', 'marginb']
+const nodeDefaults: DNode = {
+  width: 0,
+  height: 0,
+  marginl: 0,
+  marginr: 0,
+  margint: 0,
+  marginb: 0,
+}
 const edgeNumAttrs = ['minlen', 'weight', 'width', 'height', 'labeloffset']
 const edgeDefaults = {
   minlen: 1,
@@ -217,10 +225,10 @@ function buildLayoutGraph<T extends Graph>(inputGraph: T): T {
  * away from the edge itself a bit.
  */
 function makeSpaceForEdgeLabels(g) {
-  const graph = g.graph()
+  const graph: GraphData = g.graph()
   graph.ranksep /= 2
   _.forEach(g.edges(), function (e) {
-    const edge = g.edge(e)
+    const edge: DEdge = g.edge(e)
     edge.minlen *= 2
     if (edge.labelpos.toLowerCase() !== 'c') {
       if (graph.rankdir === 'TB' || graph.rankdir === 'BT') {
@@ -238,12 +246,12 @@ function makeSpaceForEdgeLabels(g) {
  * so that we can safely remove empty ranks while preserving balance for the
  * label's position.
  */
-function injectEdgeLabelProxies(g) {
+function injectEdgeLabelProxies(g: Graph<DNode>) {
   _.forEach(g.edges(), function (e) {
-    const edge = g.edge(e)
+    const edge: DEdge = g.edge(e)
     if (edge.width && edge.height) {
-      const v = g.node(e.v)
-      const w = g.node(e.w)
+      const v: DNode = g.node(e.v)
+      const w: DNode = g.node(e.w)
       const label = { rank: (w.rank - v.rank) / 2 + v.rank, e: e }
       util.addDummyNode(g, 'edge-proxy', label, '_ep')
     }
@@ -253,7 +261,7 @@ function injectEdgeLabelProxies(g) {
 function assignRankMinMax(g) {
   let maxRank = 0
   _.forEach(g.nodes(), function (v) {
-    const node = g.node(v)
+    const node: DNode = g.node(v)
     if (node.borderTop) {
       node.minRank = g.node(node.borderTop).rank
       node.maxRank = g.node(node.borderBottom).rank

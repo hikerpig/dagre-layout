@@ -111,6 +111,7 @@ function renderDot () {
     try {
       const g = formGraph()
       time('render', function () { render(g) })
+      window.currentG = g
     } catch (e) {
       input.className = 'error'
       throw e
