@@ -1,6 +1,7 @@
 import * as _ from './util-lodash'
 
 import util from './util'
+import { DEdge, DNode } from './type'
 
 /*
  * Breaks any long edges in the graph into short segments that span 1 layer
@@ -31,7 +32,7 @@ function normalizeEdge(g, e) {
   const w = e.w
   const wRank = g.node(w).rank
   const name = e.name
-  const edgeLabel = g.edge(e)
+  const edgeLabel: DEdge = g.edge(e)
   const labelRank = edgeLabel.labelRank
 
   if (wRank === vRank + 1) return
@@ -69,7 +70,7 @@ function normalizeEdge(g, e) {
 
 function undo(g) {
   _.forEach(g.graph().dummyChains, function (v) {
-    let node = g.node(v)
+    let node: DNode = g.node(v)
     const origLabel = node.edgeLabel
     let w = null
     g.setEdge(node.edgeObj, origLabel)

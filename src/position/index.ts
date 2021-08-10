@@ -2,24 +2,27 @@ import * as _ from '../util-lodash'
 
 import util from '../util'
 import { positionX } from './bk'
-import { GraphOpts } from '../type'
+import { DNode, DagreGraph } from '../type'
 
-function position(g) {
-  positionY(g)
+function position(g: DagreGraph) {
+  doPositionY(g)
   _.forEach(positionX(g), function (x, v) {
     const node = g.node(v)
     if (node) node.x = x
   })
 }
 
-function positionY(g) {
+function doPositionY(g: DagreGraph) {
   const layering = util.buildLayerMatrix(g)
-  const rankSep = (g.graph() as GraphOpts).ranksep
+  const rankSep = g.graph().ranksep
   let prevY = 0
   _.forEach(layering, function (layer) {
     const maxHeight = _.max(
       _.map(layer, function (v) {
-        if (v) return g.node(v).height
+        if (v) {
+          const node: DNode = g.node(v)
+          return node.height + (node.margint || 0) + (node.marginb || 0)
+        }
       })
     )
     _.forEach(layer, function (v) {

@@ -1,11 +1,12 @@
 import * as _ from './util-lodash'
 
 import util from './util'
+import { DNode } from './type'
 
 function addBorderSegments(g) {
   function dfs(v) {
     const children = g.children(v)
-    const node = g.node(v)
+    const node: DNode = g.node(v)
     if (children.length) {
       _.forEach(children, dfs)
     }
@@ -27,7 +28,7 @@ function addBorderSegments(g) {
   _.forEach(g.children(), dfs)
 }
 
-function addBorderNode(g, prop, prefix, sg, sgNode, rank) {
+function addBorderNode(g, prop: 'borderLeft' | 'borderRight', prefix: string, sg, sgNode: DNode, rank) {
   const label = { width: 0, height: 0, rank: rank, borderType: prop }
   const prev = sgNode[prop][rank - 1]
   const curr = util.addDummyNode(g, 'border', label, prefix)

@@ -3,10 +3,10 @@
 <meta charset="utf-8">
 <title>Dagre Debug Console</title>
 
-<script src="../dist/dagre-layout.js"></script>
-<script src="http://dagrejs.github.io/project/graphsrc-dot/latest/graphsrc-dot.js"></script>
+<script src="../dist/dagre-layout.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@pintora/graphlib"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash"></script>
 <script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/srcs/lodash.js/4.17.5/lodash.js"></script>
 
 <style>
 body {
@@ -69,7 +69,7 @@ path.edge {
 <div id="wrapper">
   <h1>Dagre Debug Console</h1>
 
-  <div id="inputPanel">
+  <div id="inputPanel" style="display: none;">
     <textarea rows=25 onkeyup="renderDot();">
 digraph graphname {
   a -> b -> c;
@@ -97,22 +97,43 @@ let debugTiming = false
 let time = dagre.util.notime
 let lastDotStr = ''
 const input = document.querySelector('#inputPanel textarea')
-function renderDot () {
+document.addEventListener('DOMContentLoaded', renderDot)
+document.body.addEventListener('dblclick', () => renderDot(true))
+
+function renderDot (force=false) {
   debugTiming = d3.select('#timing').property('checked')
   time = debugTiming ? dagre.util.time : dagre.util.notime
 
   const dotStr = input.value
-  if (dotStr !== lastDotStr) {
+  if (dotStr !== lastDotStr || force) {
     lastDotStr = dotStr
     input.className = ''
     try {
-      const g = time('DOT parsing', function () { return graphsrcDot.read(dotStr) })
+      const g = formGraph()
       time('render', function () { render(g) })
+      window.currentG = g
     } catch (e) {
       input.className = 'error'
       throw e
     }
   }
+}
+
+function formGraph() {
+  const g = new graphlib.Graph({ compound: true })
+    .setGraph({})
+
+  g.setNode('a', { label: 'a', marginl: 10 })
+  g.setNode('b', { label: 'b', marginr: 30, margint: 15 })
+  g.setNode('c', { label: 'c', marginl: 15, marginr: 60 })
+  g.setNode('d', { label: 'd', marginr: 10, margint: 0 })
+  g.setNode('e', { label: 'e', marginl: 25, margint: 40 })
+  g.setEdge('a', 'b', { label: 'ab' })
+  g.setEdge('a', 'd', { label: 'ad' })
+  g.setParent('b', 'c')
+  g.setParent('d', 'e')
+
+  return g
 }
 
 input.onkeydown = function (e) {
@@ -143,6 +164,7 @@ function preLayout (g, svg) {
     }
   })
 
+  console.log('nodes', g.nodes())
   _.forEach(g.nodes(), function (v) {
     if (g.children(v).length) {
       return
@@ -223,6 +245,7 @@ function postLayout (g, root, svg) {
       _.forEach(children, dfsChildren)
 
       const node = g.node(v)
+      console.log('subgraph node', node)
       svg.insert('g', ':first-child')
          .classed('subgraph', true)
          .attr('transform', 'translate(' + (node.x - node.width / 2) + ',' +

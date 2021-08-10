@@ -11,6 +11,7 @@ import addBorderSegments from './add-border-segments'
 import coordinateSystem from './coordinate-system'
 import order from './order'
 import position from './position'
+import { DEdge, DNode, GraphData, NodeOpts, DagreGraph } from './type'
 
 function layout(g, opts?: { debugTiming?: boolean }) {
   const time = opts && opts.debugTiming ? util.time : util.notime
@@ -151,8 +152,15 @@ function updateInputGraph(inputGraph, layoutGraph) {
 const graphNumAttrs = ['nodesep', 'edgesep', 'ranksep', 'marginx', 'marginy']
 const graphDefaults = { ranksep: 50, edgesep: 20, nodesep: 50, rankdir: 'tb' }
 const graphAttrs = ['acyclicer', 'ranker', 'rankdir', 'align']
-const nodeNumAttrs = ['width', 'height']
-const nodeDefaults = { width: 0, height: 0 }
+const nodeNumAttrs = ['width', 'height', 'marginl', 'marginr', 'margint', 'marginb']
+const nodeDefaults: NodeOpts = {
+  width: 0,
+  height: 0,
+  marginl: 0,
+  marginr: 0,
+  margint: 0,
+  marginb: 0,
+}
 const edgeNumAttrs = ['minlen', 'weight', 'width', 'height', 'labeloffset']
 const edgeDefaults = {
   minlen: 1,
@@ -216,11 +224,11 @@ function buildLayoutGraph<T extends Graph>(inputGraph: T): T {
  * We also add some minimal padding to the width to push the label for the edge
  * away from the edge itself a bit.
  */
-function makeSpaceForEdgeLabels(g) {
+function makeSpaceForEdgeLabels(g: DagreGraph) {
   const graph = g.graph()
   graph.ranksep /= 2
   _.forEach(g.edges(), function (e) {
-    const edge = g.edge(e)
+    const edge: DEdge = g.edge(e)
     edge.minlen *= 2
     if (edge.labelpos.toLowerCase() !== 'c') {
       if (graph.rankdir === 'TB' || graph.rankdir === 'BT') {
@@ -238,22 +246,22 @@ function makeSpaceForEdgeLabels(g) {
  * so that we can safely remove empty ranks while preserving balance for the
  * label's position.
  */
-function injectEdgeLabelProxies(g) {
+function injectEdgeLabelProxies(g: Graph<DNode>) {
   _.forEach(g.edges(), function (e) {
-    const edge = g.edge(e)
+    const edge: DEdge = g.edge(e)
     if (edge.width && edge.height) {
-      const v = g.node(e.v)
-      const w = g.node(e.w)
+      const v: DNode = g.node(e.v)
+      const w: DNode = g.node(e.w)
       const label = { rank: (w.rank - v.rank) / 2 + v.rank, e: e }
       util.addDummyNode(g, 'edge-proxy', label, '_ep')
     }
   })
 }
 
-function assignRankMinMax(g) {
+function assignRankMinMax(g: DagreGraph) {
   let maxRank = 0
   _.forEach(g.nodes(), function (v) {
-    const node = g.node(v)
+    const node: DNode = g.node(v)
     if (node.borderTop) {
       node.minRank = g.node(node.borderTop).rank
       node.maxRank = g.node(node.borderBottom).rank
@@ -263,7 +271,7 @@ function assignRankMinMax(g) {
   g.graph().maxRank = maxRank
 }
 
-function removeEdgeLabelProxies(g) {
+function removeEdgeLabelProxies(g: DagreGraph) {
   _.forEach(g.nodes(), function (v) {
     const node = g.node(v)
     if (node.dummy === 'edge-proxy') {
@@ -273,12 +281,12 @@ function removeEdgeLabelProxies(g) {
   })
 }
 
-function translateGraph(g) {
+function translateGraph(g: DagreGraph) {
   let minX = Number.POSITIVE_INFINITY
   let maxX = 0
   let minY = Number.POSITIVE_INFINITY
   let maxY = 0
-  const graphLabel = g.graph()
+  const graphLabel: GraphData = g.graph()
   const marginX = graphLabel.marginx || 0
   const marginY = graphLabel.marginy || 0
 
@@ -330,9 +338,9 @@ function translateGraph(g) {
   graphLabel.height = maxY - minY + marginY
 }
 
-function assignNodeIntersects(g) {
+function assignNodeIntersects(g: DagreGraph) {
   _.forEach(g.edges(), function (e) {
-    const edge = g.edge(e)
+    const edge: DEdge = g.edge(e)
     const nodeV = g.node(e.v)
     const nodeW = g.node(e.w)
     let p1 = null
@@ -350,7 +358,7 @@ function assignNodeIntersects(g) {
   })
 }
 
-function fixupEdgeLabelCoords(g) {
+function fixupEdgeLabelCoords(g: DagreGraph) {
   _.forEach(g.edges(), function (e) {
     const edge = g.edge(e)
     if (_.has(edge, 'x')) {
@@ -369,7 +377,7 @@ function fixupEdgeLabelCoords(g) {
   })
 }
 
-function reversePointsForReversedEdges(g) {
+function reversePointsForReversedEdges(g: DagreGraph) {
   _.forEach(g.edges(), function (e) {
     const edge = g.edge(e)
     if (edge.reversed) {
@@ -378,10 +386,10 @@ function reversePointsForReversedEdges(g) {
   })
 }
 
-function removeBorderNodes(g) {
+function removeBorderNodes(g: DagreGraph) {
   _.forEach(g.nodes(), function (v) {
     if (g.children(v).length) {
-      const node = g.node(v)
+      const node: DNode = g.node(v)!
       const t = g.node(node.borderTop)
       const b = g.node(node.borderBottom)
       const l = g.node(_.last(node.borderLeft))
@@ -419,7 +427,7 @@ function insertSelfEdges(g: Graph) {
   layers.forEach(function (layer) {
     let orderShift = 0
     layer.forEach(function (v, i) {
-      const node = g.node(v)
+      const node: DNode = g.node(v)
       node.order = i + orderShift
       _.forEach(node.selfEdges, function (selfEdge) {
         util.addDummyNode(
@@ -441,9 +449,9 @@ function insertSelfEdges(g: Graph) {
   })
 }
 
-function positionSelfEdges(g) {
+function positionSelfEdges(g: DagreGraph) {
   _.forEach(g.nodes(), function (v) {
-    const node = g.node(v)
+    const node: DNode = g.node(v)
     if (node.dummy === 'selfedge') {
       const selfNode = g.node(node.e.v)
       const x = selfNode.x + selfNode.width / 2

@@ -1,13 +1,14 @@
 import * as _ from './util-lodash'
 import { Graph } from '@pintora/graphlib'
+import { DagreGraph, DNode } from './type'
 
 export { Graph }
 
 /*
  * Adds a dummy node to the graph and return v.
  */
-export function addDummyNode(g, type, attrs, name) {
-  let v
+export function addDummyNode(g: DagreGraph, type: string, attrs: any, name: string) {
+  let v: string
   do {
     v = _.uniqueId(name)
   } while (g.hasNode(v))
@@ -21,7 +22,7 @@ export function addDummyNode(g, type, attrs, name) {
  * Returns a new graph with only simple edges. Handles aggregation of data
  * associated with multi-edges.
  */
-export function simplify(g: Graph) {
+export function simplify(g: DagreGraph) {
   const simplified = new Graph().setGraph(g.graph())
   _.forEach(g.nodes(), function (v) {
     simplified.setNode(v, g.node(v))
@@ -37,7 +38,7 @@ export function simplify(g: Graph) {
   return simplified
 }
 
-export function asNonCompoundGraph(g) {
+export function asNonCompoundGraph(g: DagreGraph) {
   const simplified = new Graph({ multigraph: g.isMultigraph() }).setGraph(
     g.graph()
   )
@@ -52,7 +53,7 @@ export function asNonCompoundGraph(g) {
   return simplified
 }
 
-export function successorWeights(g) {
+export function successorWeights(g: DagreGraph) {
   const weightMap = _.map(g.nodes(), function (v) {
     const sucs = {}
     _.forEach(g.outEdges(v), function (e) {
@@ -118,7 +119,7 @@ export function intersectRect(rect, point) {
  * Given a DAG with each node assigned "rank" and "order" properties, this
  * function will produce a matrix with the ids of each node.
  */
-export function buildLayerMatrix(g: Graph): Array<string[]> {
+export function buildLayerMatrix(g: DagreGraph): Array<string[]> {
   const layering = _.map(_.range(maxRank(g) + 1), function () {
     return []
   })
@@ -150,7 +151,7 @@ export function normalizeRanks(g) {
   })
 }
 
-export function removeEmptyRanks(g) {
+export function removeEmptyRanks(g: DagreGraph) {
   // Ranks may not start at 0, so we need to offset them
   const offset = _.min(
     _.map(g.nodes(), function (v) {
@@ -199,7 +200,7 @@ export function addBorderNode(g, prefix, rank?: number, order?: number) {
   return addDummyNode(g, 'border', node, prefix)
 }
 
-export function maxRank(g) {
+export function maxRank(g: DagreGraph) {
   return _.max(
     _.map(g.nodes(), function (v) {
       const rank = g.node(v).rank

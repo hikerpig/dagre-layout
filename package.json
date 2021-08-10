@@ -28,7 +28,7 @@
     "upgrade": "yarn-upgrade-all"
   },
   "dependencies": {
-    "@pintora/graphlib": "^2.2.1",
+    "@pintora/graphlib": "^2.2.2",
     "lodash-es": "^4.17.21"
   },
   "devDependencies": {

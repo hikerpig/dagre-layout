@@ -2,6 +2,7 @@ import * as _ from '../util-lodash'
 import { Graph } from '@pintora/graphlib'
 
 import util from '../util'
+import { DagreGraph, DNode } from 'src/type'
 
 /*
  * This module provides coordinate assignment based on Brandes and Köpf, "Fast
@@ -25,7 +26,7 @@ import util from '../util'
  * This algorithm (safely) assumes that a dummy node will only be incident on a
  * single node in the layers being scanned.
  */
-function findType1Conflicts(g, layering) {
+function findType1Conflicts(g: DagreGraph, layering) {
   const conflicts = {}
 
   function visitLayer(prevLayer, layer) {
@@ -68,7 +69,7 @@ function findType1Conflicts(g, layering) {
   return conflicts
 }
 
-function findType2Conflicts(g, layering) {
+function findType2Conflicts(g: DagreGraph, layering) {
   const conflicts = {}
 
   function scan(south, southPos, southEnd, prevNorthBorder, nextNorthBorder) {
@@ -155,7 +156,7 @@ function hasConflict(conflicts, v, w) {
  * we're trying to form a block with, we also ignore that possibility - our
  * blocks would be split in that scenario.
  */
-function verticalAlignment(g: Graph, layering, conflicts, neighborFn) {
+function verticalAlignment(g: DagreGraph, layering, conflicts, neighborFn) {
   const root = {}
   const align = {}
   const pos = {}
@@ -200,7 +201,7 @@ function verticalAlignment(g: Graph, layering, conflicts, neighborFn) {
   return { root: root, align: align }
 }
 
-function horizontalCompaction(g, layering, root, align, reverseSep) {
+function horizontalCompaction(g, layering, root, alignMap: Record<string, string>, reverseSep: boolean) {
   // This portion of the algorithm differs from BK due to a number of problems.
   // Instead of their algorithm we construct a new block graph and do two
   // sweeps. The first sweep places blocks with the smallest possible
@@ -247,17 +248,17 @@ function horizontalCompaction(g, layering, root, align, reverseSep) {
   _.forEach(blockG.nodes(), pass2)
 
   // Assign x coordinates to all nodes
-  _.forEach(align, function (v) {
+  _.forEach(alignMap, function (v) {
     xs[v] = xs[root[v]]
   })
 
   return xs
 }
 
-function buildBlockGraph(g, layering, root, reverseSep) {
+function buildBlockGraph(g: DagreGraph, layering, root, reverseSep) {
   const blockGraph = new Graph()
   const graphLabel = g.graph()
-  const sepFn = sep(graphLabel.nodesep, graphLabel.edgesep, reverseSep)
+  const sepFn = makeSepFn(graphLabel.nodesep, graphLabel.edgesep, reverseSep)
 
   _.forEach(layering, function (layer) {
     let u
@@ -279,7 +280,7 @@ function buildBlockGraph(g, layering, root, reverseSep) {
 /*
  * Returns the alignment that has the smallest width of the given alignments.
  */
-function findSmallestWidthAlignment(g, xss) {
+function findSmallestWidthAlignment(g: DagreGraph, xss) {
   type Pair = [string, number]
   return _.minBy(_.values(xss), function (xs) {
     const min = (_.minBy<Pair>(
@@ -325,7 +326,7 @@ function alignCoordinates(xss, alignTo) {
   })
 }
 
-function balance(xss, align) {
+function balance(xss, align: string) {
   return _.mapValues(xss.ul, function (ignore, v) {
     if (align) {
       return xss[align.toLowerCase()][v]
@@ -336,14 +337,14 @@ function balance(xss, align) {
   })
 }
 
-export function positionX(g) {
+export function positionX(g: DagreGraph) {
   const layering = util.buildLayerMatrix(g)
   const conflicts = Object.assign(
     findType1Conflicts(g, layering),
     findType2Conflicts(g, layering)
   )
 
-  const xss = {}
+  const xss: Record<string, Record<string, number>> = {}
   let adjustedLayering
   _.forEach(['u', 'd'], function (vert) {
     adjustedLayering = vert === 'u' ? layering : _.values(layering).reverse()
@@ -376,19 +377,22 @@ export function positionX(g) {
       xss[vert + horiz] = xs
     })
   })
+  // console.log('xss', xss)
 
   const smallestWidth = findSmallestWidthAlignment(g, xss)
   alignCoordinates(xss, smallestWidth)
   return balance(xss, g.graph().align)
 }
 
-function sep(nodeSep: number, edgeSep: number, reverseSep: boolean) {
-  return function (g, v, w) {
-    const vLabel = g.node(v)
-    const wLabel = g.node(w)
+function makeSepFn(nodeSep: number, edgeSep: number, reverseSep: boolean) {
+  return function (g: DagreGraph, v, w) {
+    const vLabel: DNode = g.node(v)
+    const wLabel: DNode = g.node(w)
     if (!(vLabel && wLabel)) return 0
     let sum = 0
     let delta
+
+    sum += (vLabel.marginr || 0)
 
     sum += vLabel.width / 2
     if (_.has(vLabel, 'labelpos')) {
@@ -408,6 +412,9 @@ function sep(nodeSep: number, edgeSep: number, reverseSep: boolean) {
 
     sum += (vLabel.dummy ? edgeSep : nodeSep) / 2
     sum += (wLabel.dummy ? edgeSep : nodeSep) / 2
+
+    sum += (wLabel.marginl || 0)
+    // console.log('v w margin', vLabel.marginl, wLabel.marginl)
 
     sum += wLabel.width / 2
     if (_.has(wLabel, 'labelpos')) {
@@ -430,7 +437,9 @@ function sep(nodeSep: number, edgeSep: number, reverseSep: boolean) {
 }
 
 function width(g, v): number {
-  return g.node(v)?.width
+  const node = g.node(v)
+  if (!node) return 0
+  return node.width
 }
 
 export default {
