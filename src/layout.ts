@@ -11,7 +11,7 @@ import addBorderSegments from './add-border-segments'
 import coordinateSystem from './coordinate-system'
 import order from './order'
 import position from './position'
-import { DEdge, DNode, GraphData } from './type'
+import { DEdge, DNode, GraphData, NodeOpts } from './type'
 
 function layout(g, opts?: { debugTiming?: boolean }) {
   const time = opts && opts.debugTiming ? util.time : util.notime
@@ -153,7 +153,7 @@ const graphNumAttrs = ['nodesep', 'edgesep', 'ranksep', 'marginx', 'marginy']
 const graphDefaults = { ranksep: 50, edgesep: 20, nodesep: 50, rankdir: 'tb' }
 const graphAttrs = ['acyclicer', 'ranker', 'rankdir', 'align']
 const nodeNumAttrs = ['width', 'height', 'marginl', 'marginr', 'margint', 'marginb']
-const nodeDefaults: DNode = {
+const nodeDefaults: NodeOpts = {
   width: 0,
   height: 0,
   marginl: 0,
@@ -286,7 +286,7 @@ function translateGraph(g) {
   let maxX = 0
   let minY = Number.POSITIVE_INFINITY
   let maxY = 0
-  const graphLabel = g.graph()
+  const graphLabel: GraphData = g.graph()
   const marginX = graphLabel.marginx || 0
   const marginY = graphLabel.marginy || 0
 
@@ -340,7 +340,7 @@ function translateGraph(g) {
 
 function assignNodeIntersects(g) {
   _.forEach(g.edges(), function (e) {
-    const edge = g.edge(e)
+    const edge: DEdge = g.edge(e)
     const nodeV = g.node(e.v)
     const nodeW = g.node(e.w)
     let p1 = null
@@ -389,7 +389,7 @@ function reversePointsForReversedEdges(g) {
 function removeBorderNodes(g) {
   _.forEach(g.nodes(), function (v) {
     if (g.children(v).length) {
-      const node = g.node(v)
+      const node: DNode = g.node(v)
       const t = g.node(node.borderTop)
       const b = g.node(node.borderBottom)
       const l = g.node(_.last(node.borderLeft))
@@ -427,7 +427,7 @@ function insertSelfEdges(g: Graph) {
   layers.forEach(function (layer) {
     let orderShift = 0
     layer.forEach(function (v, i) {
-      const node = g.node(v)
+      const node: DNode = g.node(v)
       node.order = i + orderShift
       _.forEach(node.selfEdges, function (selfEdge) {
         util.addDummyNode(
@@ -451,7 +451,7 @@ function insertSelfEdges(g: Graph) {
 
 function positionSelfEdges(g) {
   _.forEach(g.nodes(), function (v) {
-    const node = g.node(v)
+    const node: DNode = g.node(v)
     if (node.dummy === 'selfedge') {
       const selfNode = g.node(node.e.v)
       const x = selfNode.x + selfNode.width / 2

@@ -1,13 +1,14 @@
 import * as _ from './util-lodash'
 import { Graph } from '@pintora/graphlib'
+import { DNode } from './type'
 
 export { Graph }
 
 /*
  * Adds a dummy node to the graph and return v.
  */
-export function addDummyNode(g, type, attrs, name) {
-  let v
+export function addDummyNode(g: Graph, type: string, attrs: any, name: string) {
+  let v: string
   do {
     v = _.uniqueId(name)
   } while (g.hasNode(v))

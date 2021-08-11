@@ -124,8 +124,8 @@ function formGraph() {
     .setGraph({})
 
   g.setNode('a', { label: 'a' })
-  g.setNode('b', { label: 'b' })
-  g.setNode('c', { label: 'c' })
+  g.setNode('b', { label: 'b', marginr: 40, margint: 40 })
+  g.setNode('c', { label: 'c', marginr: 20 })
   g.setEdge('a', 'b', { label: 'ab' })
   g.setParent('b', 'c')
 

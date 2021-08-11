@@ -1,10 +1,11 @@
+import { DNode } from './type'
 import * as _ from './util-lodash'
 
 function parentDummyChains(g) {
   const postorderNums = postorder(g)
 
   _.forEach(g.graph().dummyChains, function (v) {
-    let node = g.node(v)
+    let node: DNode = g.node(v)
     const edgeObj = node.edgeObj
     const pathData = findPath(g, postorderNums, edgeObj.v, edgeObj.w)
     const path = pathData.path
@@ -49,10 +50,10 @@ function parentDummyChains(g) {
 // full path and the LCA.
 function findPath(g, postorderNums, v, w) {
   const vPath = []
-  const wPath = []
+  const wPath: string[] = []
   const low = Math.min(postorderNums[v].low, postorderNums[w].low)
   const lim = Math.max(postorderNums[v].lim, postorderNums[w].lim)
-  let parent
+  let parent: string
   let lca
 
   // Traverse up from v to find the LCA

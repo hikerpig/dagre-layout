@@ -2,6 +2,7 @@ import * as _ from '../util-lodash'
 import { Graph } from '@pintora/graphlib'
 
 import util from '../util'
+import { DNode } from 'src/type'
 
 /*
  * This module provides coordinate assignment based on Brandes and Köpf, "Fast
@@ -257,7 +258,7 @@ function horizontalCompaction(g, layering, root, align, reverseSep) {
 function buildBlockGraph(g, layering, root, reverseSep) {
   const blockGraph = new Graph()
   const graphLabel = g.graph()
-  const sepFn = sep(graphLabel.nodesep, graphLabel.edgesep, reverseSep)
+  const sepFn = makeSepFn(graphLabel.nodesep, graphLabel.edgesep, reverseSep)
 
   _.forEach(layering, function (layer) {
     let u
@@ -325,7 +326,7 @@ function alignCoordinates(xss, alignTo) {
   })
 }
 
-function balance(xss, align) {
+function balance(xss, align: string) {
   return _.mapValues(xss.ul, function (ignore, v) {
     if (align) {
       return xss[align.toLowerCase()][v]
@@ -382,13 +383,15 @@ export function positionX(g) {
   return balance(xss, g.graph().align)
 }
 
-function sep(nodeSep: number, edgeSep: number, reverseSep: boolean) {
+function makeSepFn(nodeSep: number, edgeSep: number, reverseSep: boolean) {
   return function (g, v, w) {
-    const vLabel = g.node(v)
-    const wLabel = g.node(w)
+    const vLabel: DNode = g.node(v)
+    const wLabel: DNode = g.node(w)
     if (!(vLabel && wLabel)) return 0
     let sum = 0
     let delta
+
+    sum += (vLabel.marginl || 0) + (vLabel.marginr || 0)
 
     sum += vLabel.width / 2
     if (_.has(vLabel, 'labelpos')) {
@@ -408,6 +411,10 @@ function sep(nodeSep: number, edgeSep: number, reverseSep: boolean) {
 
     sum += (vLabel.dummy ? edgeSep : nodeSep) / 2
     sum += (wLabel.dummy ? edgeSep : nodeSep) / 2
+
+    // TODO: evaluate percentage
+    sum += (wLabel.marginl || 0) + (wLabel.marginl || 0)
+    // console.log('v w margin', vLabel.marginl, wLabel.marginl)
 
     sum += wLabel.width / 2
     if (_.has(wLabel, 'labelpos')) {

@@ -1,10 +1,10 @@
 import * as _ from '../util-lodash'
 
-import util from '../util'
+import util, { Graph } from '../util'
 import { positionX } from './bk'
-import { GraphOpts } from '../type'
+import { DNode, GraphOpts } from '../type'
 
-function position(g) {
+function position(g: Graph) {
   positionY(g)
   _.forEach(positionX(g), function (x, v) {
     const node = g.node(v)
@@ -19,7 +19,10 @@ function positionY(g) {
   _.forEach(layering, function (layer) {
     const maxHeight = _.max(
       _.map(layer, function (v) {
-        if (v) return g.node(v).height
+        if (v) {
+          const node: DNode = g.node(v)
+          return node.height + (node.margint || 0) + (node.marginb || 0)
+        }
       })
     )
     _.forEach(layer, function (v) {
