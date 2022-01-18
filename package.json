@@ -11,6 +11,7 @@
   ],
   "module": "dist/dagre-layout.js",
   "umd": "dist/dagre-layout.umd.js",
+  "main": "dist/dagre-layout.umd.js",
   "keywords": [
     "graph",
     "layout",
