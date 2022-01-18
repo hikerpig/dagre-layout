@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.0](https://github.com/hikerpig/dagre-layout/compare/v0.10.0-alpha.0...v0.10.0) (2022-01-18)
+
 # [0.10.0-alpha.0](https://github.com/hikerpig/dagre-layout/compare/v0.9.0...v0.10.0-alpha.0) (2021-08-15)
 
 
