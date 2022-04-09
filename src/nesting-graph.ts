@@ -1,6 +1,7 @@
 import * as _ from './util-lodash'
 
 import util from './util'
+import { DagreGraph, DEdge } from './type'
 
 /*
  * A nesting graph creates dummy nodes for the tops and bottoms of subgraphs,
@@ -25,7 +26,7 @@ import util from './util'
  * The nesting graph idea comes from Sander, "Layout of Compound Directed
  * Graphs."
  */
-function run(g) {
+function run(g: DagreGraph) {
   const root = util.addDummyNode(g, 'root', {}, '_root')
   const depths = treeDepths(g)
   const height = Math.max.apply(null, _.values(depths)) - 1
@@ -51,11 +52,11 @@ function run(g) {
   g.graph().nodeRankFactor = nodeSep
 }
 
-function dfs(g, root, nodeSep, weight, height, depths, v) {
+function dfs(g: DagreGraph, root: string, nodeSep: number, weight: number, height: number, depths: Record<string, number>, v: string) {
   const children = g.children(v)
   if (!children.length) {
     if (v !== root) {
-      g.setEdge(root, v, { weight: 0, minlen: nodeSep })
+      g.setEdge(root, v, { weight: 0, minlen: nodeSep } as DEdge)
     }
     return
   }
@@ -82,22 +83,22 @@ function dfs(g, root, nodeSep, weight, height, depths, v) {
       weight: thisWeight,
       minlen: minlen,
       nestingEdge: true,
-    })
+    } as DEdge)
 
     g.setEdge(childBottom, bottom, {
       weight: thisWeight,
       minlen: minlen,
       nestingEdge: true,
-    })
+    } as DEdge)
   })
 
   if (!g.parent(v)) {
-    g.setEdge(root, top, { weight: 0, minlen: height + depths[v] })
+    g.setEdge(root, top, { weight: 0, minlen: height + depths[v] } as DEdge)
   }
 }
 
-function treeDepths(g) {
-  const depths = {}
+function treeDepths(g: DagreGraph) {
+  const depths: Record<string, number> = {}
   function dfs(v, depth) {
     const children = g.children(v)
     if (children && children.length) {
@@ -113,7 +114,7 @@ function treeDepths(g) {
   return depths
 }
 
-function sumWeights(g) {
+function sumWeights(g): number {
   return _.reduce(
     g.edges(),
     function (acc, e) {

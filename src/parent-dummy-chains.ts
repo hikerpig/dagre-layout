@@ -1,7 +1,7 @@
-import { DNode } from './type'
+import { DagreGraph, DNode } from './type'
 import * as _ from './util-lodash'
 
-function parentDummyChains(g) {
+function parentDummyChains(g: DagreGraph) {
   const postorderNums = postorder(g)
 
   _.forEach(g.graph().dummyChains, function (v) {
@@ -76,7 +76,7 @@ function findPath(g, postorderNums, v, w) {
   return { path: vPath.concat(wPath.reverse()), lca: lca }
 }
 
-function postorder(g) {
+function postorder(g: DagreGraph) {
   const result = {}
   let lim = 0
 

@@ -1,4 +1,4 @@
-import { Graph } from "@pintora/graphlib"
+import { Graph } from '@pintora/graphlib'
 
 export type Entry = {
   indegree: number
@@ -13,7 +13,7 @@ export type Entry = {
 
 export type Barycenter = Pick<Entry, 'v' | 'barycenter' | 'weight'>
 
-export type DagreGraph = Graph<DNode, DEdge, GraphData>;
+export type DagreGraph = Graph<DNode, DEdge, GraphData>
 
 export type SplinesType = 'polyline' | 'ortho'
 
@@ -52,10 +52,13 @@ export interface GraphData extends GraphOpts {
   height: number
   nodeRankFactor?: number
   borderRanks?: Set<number>
+  /** see nesting-graph.ts */
+  nestingRoot?: string
 }
 
 export type EdgeOpts = {
   label: string
+  /** min lengh - span how many ranks - of edge */
   minlen: number
   labeloffset: number
   labelpos: 'l' | 'r' | 'c'
@@ -68,17 +71,29 @@ export type NodeOpts = {
   marginr?: number
   margint?: number
   marginb?: number
+  /** assign to a compound node */
+  minwidth?: number
 }
 
+export type NodeDummyType =
+  | 'root'
+  | 'edge'
+  | 'edge-label'
+  | 'edge-proxy'
+  | 'border'
+  | 'selfedge'
 
-export type NodeDummyType = 'root' | 'edge' | 'edge-label' | 'edge-proxy' | 'border' | 'selfedge'
+export type SelfEdge = {
+  e: any
+  label: DEdge
+}
 
 /**
  * Node data during layout
  */
 export interface DNode extends NodeOpts {
   rank?: number
-  selfEdges?: any[]
+  selfEdges?: SelfEdge[]
   minRank?: number
   maxRank?: number
   borderTop?: string // top dummy node id
@@ -89,6 +104,7 @@ export interface DNode extends NodeOpts {
   edgeLabel?: DEdge
   edgeObj?: any
   dummy?: NodeDummyType
+  borderType?: string
   x: number
   y: number
   label: DEdge
@@ -110,6 +126,7 @@ export interface DEdge extends EdgeOpts {
   x?: number
   y?: number
   reversed?: boolean
+  nestingEdge?: boolean
 }
 
 export type Rect = { x: number; y: number; width: number; height: number }

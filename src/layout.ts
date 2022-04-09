@@ -200,6 +200,7 @@ const nodeNumAttrs = [
   'marginr',
   'margint',
   'marginb',
+  'minwidth',
 ]
 const nodeDefaults: NodeOpts = {
   width: 0,
@@ -227,7 +228,7 @@ const edgeAttrs: EdgeAttrKey[] = ['labelpos']
  * attributes can influence layout.
  */
 function buildLayoutGraph<T extends Graph>(inputGraph: T): DagreGraph {
-  const g = new Graph({ multigraph: true, compound: true })
+  const g = new Graph<NodeOpts, DEdge, GraphOpts>({ multigraph: true, compound: true })
   const graph = canonicalize(inputGraph.graph()) as GraphData
 
   g.setGraph(
@@ -260,7 +261,7 @@ function buildLayoutGraph<T extends Graph>(inputGraph: T): DagreGraph {
         edgeDefaults,
         selectNumberAttrs(edge, edgeNumAttrs),
         _.pick(edge, edgeAttrs)
-      )
+      ) as DEdge
     )
   })
 
@@ -341,10 +342,10 @@ function translateGraph(g: DagreGraph) {
   const marginX = graphLabel.marginx || 0
   const marginY = graphLabel.marginy || 0
 
-  function getExtremes(attrs) {
+  function getExtremes(attrs: DNode | DEdge) {
     const x = attrs.x
     const y = attrs.y
-    const w = attrs.width
+    const w = Math.max(('minwidth' in attrs ? attrs.minwidth: 0) || 0, attrs.width)
     const h = attrs.height
     minX = Math.min(minX, x - w / 2)
     maxX = Math.max(maxX, x + w / 2)
@@ -561,7 +562,7 @@ function removeBorderNodes(g: DagreGraph) {
   })
 }
 
-function removeSelfEdges(g) {
+function removeSelfEdges(g: DagreGraph) {
   _.forEach(g.edges(), function (e) {
     if (e.v === e.w) {
       const node = g.node(e.v)

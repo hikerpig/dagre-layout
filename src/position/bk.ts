@@ -26,10 +26,10 @@ import { DagreGraph, DNode } from 'src/type'
  * This algorithm (safely) assumes that a dummy node will only be incident on a
  * single node in the layers being scanned.
  */
-function findType1Conflicts(g: DagreGraph, layering) {
+function findType1Conflicts(g: DagreGraph, layering: Layering) {
   const conflicts = {}
 
-  function visitLayer(prevLayer, layer) {
+  function visitLayer(prevLayer: Layer, layer: Layer) {
     // last visited node in the previous layer that is incident on an inner
     // segment.
     let k0 = 0
@@ -117,7 +117,7 @@ function findType2Conflicts(g: DagreGraph, layering) {
   return conflicts
 }
 
-function findOtherInnerSegmentNode(g, v) {
+function findOtherInnerSegmentNode(g, v): string {
   if (g.node(v).dummy) {
     return _.find(g.predecessors(v), function (u) {
       return g.node(u).dummy
@@ -157,9 +157,9 @@ function hasConflict(conflicts, v, w) {
  * blocks would be split in that scenario.
  */
 function verticalAlignment(g: DagreGraph, layering: Layering, conflicts, neighborFn) {
-  const root = {}
-  const align = {}
-  const pos = {}
+  const root: Record<string, string> = {}
+  const align: Record<string, string> = {}
+  const pos: Record<string, number> = {}
 
   // We cache the position here based on the layering because the graph and
   // layering may be out of sync. The layering matrix is manipulated to
@@ -201,18 +201,18 @@ function verticalAlignment(g: DagreGraph, layering: Layering, conflicts, neighbo
   return { root: root, align: align }
 }
 
-function horizontalCompaction(g, layering: Layering, root, alignMap: Record<string, string>, reverseSep: boolean) {
+function horizontalCompaction(g: DagreGraph, layering: Layering, root, alignMap: Record<string, string>, reverseSep: boolean) {
   // This portion of the algorithm differs from BK due to a number of problems.
   // Instead of their algorithm we construct a new block graph and do two
   // sweeps. The first sweep places blocks with the smallest possible
   // coordinates. The second sweep removes unused space by moving blocks to the
   // greatest coordinates without violating separation.
-  const xs = {}
+  const xs: Record<string, number> = {}
   const blockG = buildBlockGraph(g, layering, root, reverseSep)
 
   // First pass, assign smallest coordinates via DFS
   const visited = {}
-  function pass1(v) {
+  function pass1(v: string) {
     if (!_.has(visited, v)) {
       visited[v] = true
       xs[v] = _.reduce(
@@ -228,13 +228,13 @@ function horizontalCompaction(g, layering: Layering, root, alignMap: Record<stri
   _.forEach(blockG.nodes(), pass1)
 
   const borderType = reverseSep ? 'borderLeft' : 'borderRight'
-  function pass2(v) {
+  function pass2(v: string) {
     if (visited[v] !== 2) {
       visited[v]++
       const node = g.node(v)
       const min = _.reduce(
         blockG.outEdges(v) || [],
-        function (min, e) {
+        (min, e) => {
           pass2(e.w)
           return Math.min(min, xs[e.w] - blockG.edge(e))
         },
@@ -255,14 +255,15 @@ function horizontalCompaction(g, layering: Layering, root, alignMap: Record<stri
   return xs
 }
 
-function buildBlockGraph(g: DagreGraph, layering: Layering, root, reverseSep) {
-  const blockGraph = new Graph()
+function buildBlockGraph(g: DagreGraph, layering: Layering, root: { [x: string]: any }, reverseSep: boolean) {
+  const blockGraph = new Graph<string, number>()
   const graphLabel = g.graph()
   const sepFn = makeSepFn(graphLabel.nodesep, graphLabel.edgesep, reverseSep)
 
-  // console.log('buildBlockGraph layering', layering)
+  // console.log('[buildBlockGraph] layering', layering)
+  // console.log('[buildBlockGraph], g', g)
   _.forEach(layering, function (layer) {
-    let u
+    let u: string
     _.forEach(layer, function (v) {
       const vRoot = root[v]
       blockGraph.setNode(vRoot)
@@ -281,7 +282,7 @@ function buildBlockGraph(g: DagreGraph, layering: Layering, root, reverseSep) {
 /*
  * Returns the alignment that has the smallest width of the given alignments.
  */
-function findSmallestWidthAlignment(g: DagreGraph, xss) {
+function findSmallestWidthAlignment(g: DagreGraph, xss: XSegs) {
   type Pair = [string, number]
   return _.minBy(_.values(xss), function (xs) {
     const min = (_.minBy<Pair>(
@@ -303,7 +304,7 @@ function findSmallestWidthAlignment(g: DagreGraph, xss) {
  * alignments have their maximum coordinate at the same point as the maximum
  * coordinate of the smallest width alignment.
  */
-function alignCoordinates(xss, alignTo) {
+function alignCoordinates(xss: XSegs, alignTo: Record<string, number>) {
   const alignToVals = _.values(alignTo)
   const alignToMin = _.min(alignToVals)
   const alignToMax = _.max(alignToVals)
@@ -338,7 +339,10 @@ function balance(xss, align: string) {
   })
 }
 
-type Layering = string[][]
+type Layer = string[]
+type Layering = Layer[]
+
+type XSegs = Record<string, Record<string, number>>
 
 export function positionX(g: DagreGraph) {
   const layering = util.buildLayerMatrix(g)
@@ -347,7 +351,7 @@ export function positionX(g: DagreGraph) {
     findType2Conflicts(g, layering)
   )
 
-  const xss: Record<string, Record<string, number>> = {}
+  const xss: XSegs = {}
   let adjustedLayering: Layering
   _.forEach(['u', 'd'], function (vert) {
     adjustedLayering = vert === 'u' ? layering : _.values(layering).reverse()
@@ -388,24 +392,23 @@ export function positionX(g: DagreGraph) {
 }
 
 function makeSepFn(nodeSep: number, edgeSep: number, reverseSep: boolean) {
-  return function (g: DagreGraph, v, w) {
+  return function (g: DagreGraph, v: string, w: string) {
     const vLabel: DNode = g.node(v)
     const wLabel: DNode = g.node(w)
     if (!(vLabel && wLabel)) return 0
     let sum = 0
-    let delta
+    let delta: number
 
     sum += (vLabel.marginr || 0)
-    // console.log('vLabel', vLabel)
 
-    sum += vLabel.width / 2
+    sum += getNodeWidth(vLabel) / 2
     if (_.has(vLabel, 'labelpos')) {
       switch (vLabel.labelpos.toLowerCase()) {
         case 'l':
-          delta = -vLabel.width / 2
+          delta = -getNodeWidth(vLabel) / 2
           break
         case 'r':
-          delta = vLabel.width / 2
+          delta = getNodeWidth(vLabel) / 2
           break
       }
     }
@@ -420,14 +423,14 @@ function makeSepFn(nodeSep: number, edgeSep: number, reverseSep: boolean) {
     sum += (wLabel.marginl || 0)
     // console.log('v w margin', vLabel.marginl, wLabel.marginl)
 
-    sum += wLabel.width / 2
+    sum += getNodeWidth(wLabel) / 2
     if (_.has(wLabel, 'labelpos')) {
       switch (wLabel.labelpos.toLowerCase()) {
         case 'l':
-          delta = wLabel.width / 2
+          delta = getNodeWidth(wLabel) / 2
           break
         case 'r':
-          delta = -wLabel.width / 2
+          delta = -getNodeWidth(wLabel) / 2
           break
       }
     }
@@ -440,10 +443,14 @@ function makeSepFn(nodeSep: number, edgeSep: number, reverseSep: boolean) {
   }
 }
 
-function width(g, v): number {
-  const node = g.node(v)
+function getNodeWidth(node: DNode) {
   if (!node) return 0
-  return node.width
+  return Math.max(node.minwidth || 0, node.width)
+}
+
+function width(g: DagreGraph, v: string): number {
+  const node = g.node(v)
+  return getNodeWidth(node)
 }
 
 export default {
