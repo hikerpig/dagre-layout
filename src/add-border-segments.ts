@@ -1,7 +1,7 @@
 import * as _ from './util-lodash'
 
 import util from './util'
-import { DagreGraph, DNode } from './type'
+import { DagreGraph, DEdge, DNode } from './type'
 
 function addBorderSegments(g: DagreGraph) {
   function dfs(v: string) {
@@ -28,14 +28,14 @@ function addBorderSegments(g: DagreGraph) {
   _.forEach(g.children(), dfs)
 }
 
-function addBorderNode(g, prop: 'borderLeft' | 'borderRight', prefix: string, sg, sgNode: DNode, rank) {
+function addBorderNode(g: DagreGraph, prop: 'borderLeft' | 'borderRight', prefix: string, sg: string, sgNode: DNode, rank: number) {
   const label = { width: 0, height: 0, rank: rank, borderType: prop }
   const prev = sgNode[prop][rank - 1]
   const curr = util.addDummyNode(g, 'border', label, prefix)
   sgNode[prop][rank] = curr
   g.setParent(curr, sg)
   if (prev) {
-    g.setEdge(prev, curr, { weight: 1 })
+    g.setEdge(prev, curr, { weight: 1 } as DEdge)
   }
 }
 

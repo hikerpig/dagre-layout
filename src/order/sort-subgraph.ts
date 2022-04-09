@@ -4,7 +4,7 @@ import * as _ from '../util-lodash'
 import barycenter from './barycenter'
 import resolveConflicts from './resolve-conflicts'
 import sort from './sort'
-import { Entry } from '../type'
+import { Entry, DagreGraph } from '../type'
 
 function sortSubgraph(g, v, cg, biasRight) {
   let movable = g.children(v)
