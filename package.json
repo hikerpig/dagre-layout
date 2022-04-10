@@ -17,6 +17,7 @@
     "layout",
     "dagre"
   ],
+  "typings": "dist/types/type.d.ts",
   "scripts": {
     "format": "prettier --fix -w src",
     "karma": "node -r @babel/register node_modules/.bin/karma start",
