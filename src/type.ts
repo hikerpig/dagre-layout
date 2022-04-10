@@ -96,10 +96,6 @@ export interface DNode extends NodeOpts {
   labelpos: 'l' | 'r' | 'c'
 }
 
-// interface DummyNode extends DNode {
-//   borderType: string
-// }
-
 /**
  * Edge data
  */
