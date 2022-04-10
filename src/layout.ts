@@ -198,7 +198,7 @@ const edgeAttrs: EdgeAttrKey[] = ['labelpos']
  * layout graph. Thus this function serves as a good place to determine what
  * attributes can influence layout.
  */
-function buildLayoutGraph<T extends Graph>(inputGraph: T): T {
+function buildLayoutGraph<T extends Graph>(inputGraph: T): DagreGraph {
   const g = new Graph({ multigraph: true, compound: true })
   const graph = canonicalize(inputGraph.graph()) as GraphData
 
@@ -208,9 +208,11 @@ function buildLayoutGraph<T extends Graph>(inputGraph: T): T {
       graphDefaults,
       selectNumberAttrs(graph, graphNumAttrs),
       _.pick(graph, graphAttrs),
+      {
+        borderRanks: new Set(),
+      }
     )
   )
-  graph.borderRanks = new Set()
 
   _.forEach(inputGraph.nodes(), function (v) {
     const node = canonicalize(inputGraph.node(v))
@@ -234,7 +236,7 @@ function buildLayoutGraph<T extends Graph>(inputGraph: T): T {
     )
   })
 
-  return g as any
+  return g as unknown as DagreGraph
 }
 
 /*
@@ -385,23 +387,23 @@ function assignNodeIntersects(g: DagreGraph) {
       p2 = edge.points[edge.points.length - 1]
       const pointsBetween = edge.points.slice(1, edge.points.length - 1)
 
-      const labelPoint = { ...p1 }
-      edge.labelPoint = labelPoint
-
-      const nodesInfo = comparePositions(nodeV, nodeW)
-
       if (avoid_label_on_border) {
         const isLabelPointOnBorder = borderRanks.has(nodeV.rank + 1)
         // we can move the label points down a little bit
+        // this should be done before shallow copy of labelPoint
         if (isLabelPointOnBorder) {
-          labelPoint.y += nodesep
+          p1.y += nodesep
         }
       }
+
+      const labelPoint = { ...p1 }
+      edge.labelPoint = labelPoint
 
       const origInterWithV = util.intersectRect(nodeV, labelPoint)
       const origInterWithW = util.intersectRect(nodeW, p2)
       let edgePointsArranged = false
       if (isOrthogonal) {
+        const nodesInfo = comparePositions(nodeV, nodeW)
         // to form as orthogonal drawing
         const lastPointInBetween = pointsBetween.length ? pointsBetween[pointsBetween.length - 1] : null
         if (isTopBottom && !nodesInfo.isXEqual) {
