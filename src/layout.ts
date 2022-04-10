@@ -384,23 +384,24 @@ function assignNodeIntersects(g: DagreGraph) {
       const labelPoint = { ...p1 }
       edge.labelPoint = labelPoint
 
-      const origIntersectWithV = util.intersectRect(nodeV, labelPoint)
-      const origIntersectWithW = util.intersectRect(nodeW, p2)
+      const origInterWithV = util.intersectRect(nodeV, labelPoint)
+      const origInterWithW = util.intersectRect(nodeW, p2)
       let edgePointsArranged = false
       if (isOrthogonal) {
         // to form as orthogonal drawing
         const nodesInfo = comparePositions(nodeV, nodeW)
+        const lastPointInBetween = pointsBetween.length ? pointsBetween[pointsBetween.length - 1] : null
         if (isTopBottom && !nodesInfo.isXEqual) {
           // assumes v is always above w
-          p1 = { x: origIntersectWithV.x, y: labelPoint.y + 1 }
-          p2 = { x: origIntersectWithW.x, y: labelPoint.y + 1 }
-          edge.points = [origIntersectWithV, p1, labelPoint, ...pointsBetween, origIntersectWithW]
+          p1 = { x: origInterWithV.x, y: labelPoint.y }
+          p2 = { x: origInterWithW.x, y: (lastPointInBetween || labelPoint).y }
+          edge.points = [origInterWithV, p1, labelPoint, ...pointsBetween, p2, origInterWithW]
           edgePointsArranged = true
         } else if (!isTopBottom && !nodesInfo.isYEqual) {
           // assumes v is always left of w
-          p1 = { x: labelPoint.x, y: origIntersectWithV.y }
-          p2 = { x: labelPoint.x, y: origIntersectWithW.y }
-          edge.points = [origIntersectWithV, p1, labelPoint, ...pointsBetween, origIntersectWithW]
+          p1 = { x: labelPoint.x, y: origInterWithV.y }
+          p2 = { x: (lastPointInBetween || labelPoint).x, y: origInterWithW.y }
+          edge.points = [origInterWithV, p1, labelPoint, ...pointsBetween, p2, origInterWithW]
           edgePointsArranged = true
         }
       }
