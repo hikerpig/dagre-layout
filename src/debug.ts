@@ -4,7 +4,7 @@ import { Graph } from '@pintora/graphlib'
 import util from './util'
 
 /* istanbul ignore next */
-function debugOrdering(g) {
+export function debugOrdering(g) {
   const layerMatrix = util.buildLayerMatrix(g)
 
   const h = new Graph({ compound: true, multigraph: true }).setGraph({})
@@ -28,8 +28,4 @@ function debugOrdering(g) {
   })
 
   return h
-}
-
-export default {
-  debugOrdering,
 }

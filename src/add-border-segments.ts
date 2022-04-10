@@ -1,10 +1,10 @@
 import * as _ from './util-lodash'
 
 import util from './util'
-import { DNode } from './type'
+import { DagreGraph, DNode } from './type'
 
-function addBorderSegments(g) {
-  function dfs(v) {
+function addBorderSegments(g: DagreGraph) {
+  function dfs(v: string) {
     const children = g.children(v)
     const node: DNode = g.node(v)
     if (children.length) {

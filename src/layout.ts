@@ -4,14 +4,14 @@ import { Graph } from '@pintora/graphlib'
 import acyclic from './acyclic'
 import normalize from './normalize'
 import rank from './rank'
-import util, { normalizeRanks, removeEmptyRanks } from './util'
+import util, { normalizeRanks, removeEmptyRanks, comparePositions } from './util'
 import parentDummyChains from './parent-dummy-chains'
 import nestingGraph from './nesting-graph'
 import addBorderSegments from './add-border-segments'
 import coordinateSystem from './coordinate-system'
 import order from './order'
 import position from './position'
-import { DEdge, DNode, GraphData, NodeOpts, DagreGraph } from './type'
+import { DEdge, DNode, GraphData, NodeOpts, DagreGraph, Point, GraphOpts, EdgeOpts } from './type'
 
 function layout(g, opts?: { debugTiming?: boolean }) {
   const time = opts && opts.debugTiming ? util.time : util.notime
@@ -28,7 +28,7 @@ function layout(g, opts?: { debugTiming?: boolean }) {
   })
 }
 
-function runLayout(g, time) {
+function runLayout(g: DagreGraph, time) {
   time('    makeSpaceForEdgeLabels', function () {
     makeSpaceForEdgeLabels(g)
   })
@@ -118,7 +118,7 @@ function runLayout(g, time) {
  * to the input graph, so it serves as a good place to determine what
  * attributes can influence layout.
  */
-function updateInputGraph(inputGraph, layoutGraph) {
+function updateInputGraph(inputGraph: DagreGraph, layoutGraph: DagreGraph) {
   _.forEach(inputGraph.nodes(), function (v) {
     const inputLabel = inputGraph.node(v)
     const layoutLabel = layoutGraph.node(v)
@@ -139,6 +139,7 @@ function updateInputGraph(inputGraph, layoutGraph) {
     const layoutLabel = layoutGraph.edge(e)
 
     inputLabel.points = layoutLabel.points
+    inputLabel.labelPoint = layoutLabel.labelPoint
     if (_.has(layoutLabel, 'x')) {
       inputLabel.x = layoutLabel.x
       inputLabel.y = layoutLabel.y
@@ -149,9 +150,26 @@ function updateInputGraph(inputGraph, layoutGraph) {
   inputGraph.graph().height = layoutGraph.graph().height
 }
 
-const graphNumAttrs = ['nodesep', 'edgesep', 'ranksep', 'marginx', 'marginy']
-const graphDefaults = { ranksep: 50, edgesep: 20, nodesep: 50, rankdir: 'tb' }
-const graphAttrs = ['acyclicer', 'ranker', 'rankdir', 'align']
+type GraphAttrKey = keyof GraphOpts
+type EdgeAttrKey = keyof EdgeOpts
+
+const graphNumAttrs: GraphAttrKey[] = ['nodesep', 'edgesep', 'ranksep', 'marginx', 'marginy']
+
+const graphDefaults: Partial<GraphOpts> = {
+  ranksep: 50,
+  edgesep: 20,
+  nodesep: 50,
+  rankdir: 'tb',
+  splines: 'polyline',
+}
+
+const graphAttrs: GraphAttrKey[] = [
+  'acyclicer',
+  'ranker',
+  'rankdir',
+  'align',
+  'splines',
+]
 const nodeNumAttrs = ['width', 'height', 'marginl', 'marginr', 'margint', 'marginb']
 const nodeDefaults: NodeOpts = {
   width: 0,
@@ -162,7 +180,7 @@ const nodeDefaults: NodeOpts = {
   marginb: 0,
 }
 const edgeNumAttrs = ['minlen', 'weight', 'width', 'height', 'labeloffset']
-const edgeDefaults = {
+const edgeDefaults: Partial<DEdge> = {
   minlen: 1,
   weight: 1,
   width: 0,
@@ -170,7 +188,7 @@ const edgeDefaults = {
   labeloffset: 10,
   labelpos: 'r',
 }
-const edgeAttrs = ['labelpos']
+const edgeAttrs: EdgeAttrKey[] = ['labelpos']
 
 /*
  * Constructs a new graph from the input graph, which can be used for layout.
@@ -339,22 +357,61 @@ function translateGraph(g: DagreGraph) {
 }
 
 function assignNodeIntersects(g: DagreGraph) {
+  const { rankdir, splines } = g.graph()
+  const isTopBottom = rankdir.toUpperCase() === 'TB'
+  const isOrthogonal = splines === 'ortho'
   _.forEach(g.edges(), function (e) {
     const edge: DEdge = g.edge(e)
     const nodeV = g.node(e.v)
     const nodeW = g.node(e.w)
-    let p1 = null
-    let p2 = null
+    let p1: Point | null = null
+    let p2: Point | null = null
+
+    // console.log('1. edge.points', edge.points.length, JSON.stringify(edge.points))
+
     if (!edge.points) {
+      // link two rects' center
       edge.points = []
       p1 = nodeW
       p2 = nodeV
+      edge.points.unshift(util.intersectRect(nodeV, p1))
+      edge.points.push(util.intersectRect(nodeW, p2))
     } else {
       p1 = edge.points[0]
       p2 = edge.points[edge.points.length - 1]
+      const pointsBetween = edge.points.slice(1, edge.points.length - 1)
+
+      const labelPoint = { ...p1 }
+      edge.labelPoint = labelPoint
+
+      const origIntersectWithV = util.intersectRect(nodeV, labelPoint)
+      const origIntersectWithW = util.intersectRect(nodeW, p2)
+      let edgePointsArranged = false
+      if (isOrthogonal) {
+        // to form as orthogonal drawing
+        const nodesInfo = comparePositions(nodeV, nodeW)
+        if (isTopBottom && !nodesInfo.isXEqual) {
+          // assumes v is always above w
+          p1 = { x: origIntersectWithV.x, y: labelPoint.y + 1 }
+          p2 = { x: origIntersectWithW.x, y: labelPoint.y + 1 }
+          edge.points = [origIntersectWithV, p1, labelPoint, ...pointsBetween, origIntersectWithW]
+          edgePointsArranged = true
+        } else if (!isTopBottom && !nodesInfo.isYEqual) {
+          // assumes v is always left of w
+          p1 = { x: labelPoint.x, y: origIntersectWithV.y }
+          p2 = { x: labelPoint.x, y: origIntersectWithW.y }
+          edge.points = [origIntersectWithV, p1, labelPoint, ...pointsBetween, origIntersectWithW]
+          edgePointsArranged = true
+        }
+      }
+      if (!edgePointsArranged) {
+        // by default, add intersection points of both nodes to edge.points
+        const intersectWithV = util.intersectRect(nodeV, labelPoint)
+        const intersectWithW = util.intersectRect(nodeW, p2)
+        edge.points.unshift(intersectWithV)
+        edge.points.push(intersectWithW)
+      }
     }
-    edge.points.unshift(util.intersectRect(nodeV, p1))
-    edge.points.push(util.intersectRect(nodeW, p2))
   })
 }
 

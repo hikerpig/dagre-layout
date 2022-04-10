@@ -156,7 +156,7 @@ function hasConflict(conflicts, v, w) {
  * we're trying to form a block with, we also ignore that possibility - our
  * blocks would be split in that scenario.
  */
-function verticalAlignment(g: DagreGraph, layering, conflicts, neighborFn) {
+function verticalAlignment(g: DagreGraph, layering: Layering, conflicts, neighborFn) {
   const root = {}
   const align = {}
   const pos = {}
@@ -201,7 +201,7 @@ function verticalAlignment(g: DagreGraph, layering, conflicts, neighborFn) {
   return { root: root, align: align }
 }
 
-function horizontalCompaction(g, layering, root, alignMap: Record<string, string>, reverseSep: boolean) {
+function horizontalCompaction(g, layering: Layering, root, alignMap: Record<string, string>, reverseSep: boolean) {
   // This portion of the algorithm differs from BK due to a number of problems.
   // Instead of their algorithm we construct a new block graph and do two
   // sweeps. The first sweep places blocks with the smallest possible
@@ -255,11 +255,12 @@ function horizontalCompaction(g, layering, root, alignMap: Record<string, string
   return xs
 }
 
-function buildBlockGraph(g: DagreGraph, layering, root, reverseSep) {
+function buildBlockGraph(g: DagreGraph, layering: Layering, root, reverseSep) {
   const blockGraph = new Graph()
   const graphLabel = g.graph()
   const sepFn = makeSepFn(graphLabel.nodesep, graphLabel.edgesep, reverseSep)
 
+  // console.log('buildBlockGraph layering', layering)
   _.forEach(layering, function (layer) {
     let u
     _.forEach(layer, function (v) {
@@ -337,6 +338,8 @@ function balance(xss, align: string) {
   })
 }
 
+type Layering = string[][]
+
 export function positionX(g: DagreGraph) {
   const layering = util.buildLayerMatrix(g)
   const conflicts = Object.assign(
@@ -345,7 +348,7 @@ export function positionX(g: DagreGraph) {
   )
 
   const xss: Record<string, Record<string, number>> = {}
-  let adjustedLayering
+  let adjustedLayering: Layering
   _.forEach(['u', 'd'], function (vert) {
     adjustedLayering = vert === 'u' ? layering : _.values(layering).reverse()
     _.forEach(['l', 'r'], function (horiz) {
@@ -393,6 +396,7 @@ function makeSepFn(nodeSep: number, edgeSep: number, reverseSep: boolean) {
     let delta
 
     sum += (vLabel.marginr || 0)
+    // console.log('vLabel', vLabel)
 
     sum += vLabel.width / 2
     if (_.has(vLabel, 'labelpos')) {

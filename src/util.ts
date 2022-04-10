@@ -1,20 +1,20 @@
 import * as _ from './util-lodash'
 import { Graph } from '@pintora/graphlib'
-import { DagreGraph, DNode } from './type'
+import { DagreGraph, DNode, Rect, Point, NodeDummyType } from './type'
 
 export { Graph }
 
 /*
  * Adds a dummy node to the graph and return v.
  */
-export function addDummyNode(g: DagreGraph, type: string, attrs: any, name: string) {
+export function addDummyNode(g: DagreGraph, type: NodeDummyType, attrs: Partial<DNode>, name: string) {
   let v: string
   do {
     v = _.uniqueId(name)
   } while (g.hasNode(v))
 
   attrs.dummy = type
-  g.setNode(v, attrs)
+  g.setNode(v, attrs as DNode)
   return v
 }
 
@@ -79,7 +79,7 @@ export function predecessorWeights(g) {
  * Finds where a line starting at point ({x, y}) would intersect a rectangle
  * ({x, y, width, height}) if it were pointing at the rectangle's center.
  */
-export function intersectRect(rect, point) {
+export function intersectRect(rect: Rect, point: Point): Point {
   const x = rect.x
   const y = rect.y
 
@@ -243,6 +243,33 @@ export function time(name, fn) {
 
 export function notime(name, fn) {
   return fn()
+}
+
+/**
+ * compare two objects relative position, maybe rects or points
+ */
+export function comparePositions(p1: Point, p2: Point) {
+  const isXEqual = p1.x === p2.x
+  const isYEqual = p1.y === p2.y
+
+  const leftOne = p2.x < p1.x ? p2 : p1
+  const topOne = p2.y < p1.y ? p2 : p1
+  const rightOne = p1 === leftOne ? p2 : p1
+  const bottomOne = p1 === topOne ? p2 : p1
+
+  const dx = rightOne.x - leftOne.x
+  const dy = bottomOne.y - topOne.y
+
+  return {
+    isXEqual,
+    isYEqual,
+    leftOne,
+    rightOne,
+    topOne,
+    bottomOne,
+    dx,
+    dy,
+  }
 }
 
 export default {

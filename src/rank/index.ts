@@ -1,7 +1,7 @@
 import { longestPath } from './util'
 import feasibleTree from './feasible-tree'
 import networkSimplex from './network-simplex'
-import { GraphData } from 'src/type'
+import { DagreGraph, GraphData } from 'src/type'
 
 /*
  * Assigns a rank to each node in the input graph that respects the "minlen"
@@ -22,7 +22,7 @@ import { GraphData } from 'src/type'
  *       algorithm. Ranks can start at any index (including negative), we'll
  *       fix them up later.
  */
-function rank(g) {
+function rank(g: DagreGraph) {
   switch ((g.graph() as GraphData).ranker) {
     case 'network-simplex':
       networkSimplexRanker(g)
@@ -46,7 +46,7 @@ function tightTreeRanker(g) {
   feasibleTree(g)
 }
 
-function networkSimplexRanker(g) {
+function networkSimplexRanker(g: DagreGraph) {
   networkSimplex(g)
 }
 

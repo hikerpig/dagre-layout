@@ -15,6 +15,11 @@ export type Barycenter = Pick<Entry, 'v' | 'barycenter' | 'weight'>
 
 export type DagreGraph = Graph<DNode, DEdge, GraphData>;
 
+export type SplinesType = 'polyline' | 'ortho'
+
+/**
+ * Options on graph
+ */
 export type GraphOpts = Partial<{
   nodesep: number
   edgesep: number
@@ -25,6 +30,12 @@ export type GraphOpts = Partial<{
   acyclicer: string
   ranker: string
   align: string
+  /**
+   * How edge splines are represented
+   * - 'polyline' by default
+   * - 'ortho' orthogonal edges are axis-aligned and bendings are right-angled
+   */
+  splines: SplinesType
 }>
 
 /**
@@ -55,6 +66,8 @@ export type NodeOpts = {
 }
 
 
+export type NodeDummyType = 'root' | 'edge' | 'edge-label' | 'edge-proxy' | 'border' | 'selfedge'
+
 /**
  * Node data during layout
  */
@@ -70,7 +83,7 @@ export interface DNode extends NodeOpts {
   order: number
   edgeLabel?: DEdge
   edgeObj?: any
-  dummy?: string
+  dummy?: NodeDummyType
   x: number
   y: number
   label: DEdge
@@ -78,16 +91,26 @@ export interface DNode extends NodeOpts {
   labelpos: 'l' | 'r' | 'c'
 }
 
+// interface DummyNode extends DNode {
+//   borderType: string
+// }
+
 /**
  * Edge data
  */
 export interface DEdge extends EdgeOpts {
   width: number
   height: number
-  points: any[]
+  points: Point[]
   labelRank: number
   weight: number
+  /** position for the label */
+  labelPoint?: Point
   x?: number
   y?: number
   reversed?: boolean
 }
+
+export type Rect = { x: number; y: number; width: number; height: number }
+
+export type Point = { x: number; y: number }

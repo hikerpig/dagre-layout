@@ -1,9 +1,10 @@
 import * as _ from '../util-lodash'
-import { alg } from '@pintora/graphlib'
+import { alg, Graph } from '@pintora/graphlib'
 
 import feasibleTree from './feasible-tree'
 import { slack, longestPath as initRank } from './util'
 import { simplify } from '../util'
+import { DagreGraph } from 'src/type'
 
 const { preorder, postorder } = alg
 
@@ -48,7 +49,7 @@ networkSimplex.exchangeEdges = exchangeEdges
  * for Drawing Directed Graphs." The structure of the file roughly follows the
  * structure of the overall algorithm.
  */
-function networkSimplex(g) {
+function networkSimplex(g: DagreGraph) {
   g = simplify(g)
   initRank(g)
   const t = feasibleTree(g)
@@ -66,7 +67,7 @@ function networkSimplex(g) {
 /*
  * Initializes cut values for all edges in the tree.
  */
-function initCutValues(t, g) {
+function initCutValues(t: Graph<any, any, any>, g: DagreGraph) {
   let vs = postorder(t, t.nodes())
   vs = vs.slice(0, vs.length - 1)
   _.forEach(vs, function (v) {

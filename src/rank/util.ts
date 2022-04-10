@@ -1,4 +1,5 @@
 import { Edge, Graph } from '@pintora/graphlib'
+import { DagreGraph } from 'src/type'
 import * as _ from '../util-lodash'
 
 /*
@@ -22,17 +23,17 @@ import * as _ from '../util-lodash'
  *
  *    1. Each node will be assign an (unnormalized) "rank" property.
  */
-export function longestPath(g) {
+export function longestPath(g: DagreGraph) {
   const visited = {}
 
-  function dfs(v) {
+  function dfs(v: string) {
     const label = g.node(v)
     if (_.has(visited, v)) {
       return label.rank
     }
     visited[v] = true
 
-    const rank =
+    const rank: number =
       _.min(
         _.map(g.outEdges(v), function (e) {
           return dfs(e.w) - g.edge(e).minlen

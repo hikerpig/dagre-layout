@@ -1,7 +1,8 @@
 import * as _ from './util-lodash'
 
 import util from './util'
-import { DEdge, DNode } from './type'
+import { DagreGraph, DEdge, DNode } from './type'
+import { Edge } from '@pintora/graphlib'
 
 /*
  * Breaks any long edges in the graph into short segments that span 1 layer
@@ -26,7 +27,7 @@ function run(g) {
   })
 }
 
-function normalizeEdge(g, e) {
+function normalizeEdge(g: DagreGraph, e: Edge) {
   let v = e.v
   let vRank = g.node(v).rank
   const w = e.w
@@ -39,7 +40,7 @@ function normalizeEdge(g, e) {
 
   g.removeEdge(e)
 
-  let dummy
+  let dummy: string
   let attrs
   let i
   for (i = 0, ++vRank; vRank < wRank; ++i, ++vRank) {
@@ -58,17 +59,17 @@ function normalizeEdge(g, e) {
       attrs.dummy = 'edge-label'
       attrs.labelpos = edgeLabel.labelpos
     }
-    g.setEdge(v, dummy, { weight: edgeLabel.weight }, name)
+    g.setEdge(v, dummy, { weight: edgeLabel.weight } as DEdge, name)
     if (i === 0) {
       g.graph().dummyChains.push(dummy)
     }
     v = dummy
   }
 
-  g.setEdge(v, w, { weight: edgeLabel.weight }, name)
+  g.setEdge(v, w, { weight: edgeLabel.weight } as DEdge, name)
 }
 
-function undo(g) {
+function undo(g: DagreGraph) {
   _.forEach(g.graph().dummyChains, function (v) {
     let node: DNode = g.node(v)
     const origLabel = node.edgeLabel
@@ -77,6 +78,7 @@ function undo(g) {
     while (node.dummy) {
       w = g.successors(v)[0]
       g.removeNode(v)
+      // push dummy node's coord to edge.points
       origLabel.points.push({ x: node.x, y: node.y })
       if (node.dummy === 'edge-label') {
         origLabel.x = node.x
