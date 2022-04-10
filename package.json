@@ -1,6 +1,6 @@
 {
   "name": "@pintora/dagre",
-  "version": "0.10.3",
+  "version": "0.10.4",
   "description": "Graph layout for JavaScript",
   "author": "Hikerpig <hikerpigwinnie@gmail.com>",
   "contributors": [

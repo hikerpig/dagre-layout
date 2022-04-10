@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.4](https://github.com/hikerpig/dagre-layout/compare/v0.10.3...v0.10.4) (2022-04-10)
+
+
+### Bug Fixes
+
+* avoid_label_on_border should also work even when ortho is not enabled ([2c56fad](https://github.com/hikerpig/dagre-layout/commit/2c56fad613cf988e30c12b0d1676225e3e9cd5b9))
+
 ### [0.10.3](https://github.com/hikerpig/dagre-layout/compare/v0.10.2...v0.10.3) (2022-04-10)
 
 
