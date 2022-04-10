@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.3](https://github.com/hikerpig/dagre-layout/compare/v0.10.2...v0.10.3) (2022-04-10)
+
+
+### Bug Fixes
+
+* type export ([23d81aa](https://github.com/hikerpig/dagre-layout/commit/23d81aa0adc74664f0fe43352d3e287a3f227172))
+
 ### [0.10.2](https://github.com/hikerpig/dagre-layout/compare/v0.10.1...v0.10.2) (2022-04-10)
 
 
