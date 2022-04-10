@@ -161,6 +161,7 @@ const graphDefaults: Partial<GraphOpts> = {
   nodesep: 50,
   rankdir: 'tb',
   splines: 'polyline',
+  avoid_label_on_border: false,
 }
 
 const graphAttrs: GraphAttrKey[] = [
@@ -169,6 +170,7 @@ const graphAttrs: GraphAttrKey[] = [
   'rankdir',
   'align',
   'splines',
+  'avoid_label_on_border',
 ]
 const nodeNumAttrs = ['width', 'height', 'marginl', 'marginr', 'margint', 'marginb']
 const nodeDefaults: NodeOpts = {
@@ -198,16 +200,17 @@ const edgeAttrs: EdgeAttrKey[] = ['labelpos']
  */
 function buildLayoutGraph<T extends Graph>(inputGraph: T): T {
   const g = new Graph({ multigraph: true, compound: true })
-  const graph = canonicalize(inputGraph.graph())
+  const graph = canonicalize(inputGraph.graph()) as GraphData
 
   g.setGraph(
     Object.assign(
       {},
       graphDefaults,
       selectNumberAttrs(graph, graphNumAttrs),
-      _.pick(graph, graphAttrs)
+      _.pick(graph, graphAttrs),
     )
   )
+  graph.borderRanks = new Set()
 
   _.forEach(inputGraph.nodes(), function (v) {
     const node = canonicalize(inputGraph.node(v))
@@ -357,7 +360,7 @@ function translateGraph(g: DagreGraph) {
 }
 
 function assignNodeIntersects(g: DagreGraph) {
-  const { rankdir, splines } = g.graph()
+  const { rankdir, splines, borderRanks, nodesep, avoid_label_on_border } = g.graph()
   const isTopBottom = rankdir.toUpperCase() === 'TB'
   const isOrthogonal = splines === 'ortho'
   _.forEach(g.edges(), function (e) {
@@ -367,6 +370,7 @@ function assignNodeIntersects(g: DagreGraph) {
     let p1: Point | null = null
     let p2: Point | null = null
 
+    // console.log('1. node v w rank', nodeV.rank, nodeW.rank)
     // console.log('1. edge.points', edge.points.length, JSON.stringify(edge.points))
 
     if (!edge.points) {
@@ -384,12 +388,21 @@ function assignNodeIntersects(g: DagreGraph) {
       const labelPoint = { ...p1 }
       edge.labelPoint = labelPoint
 
+      const nodesInfo = comparePositions(nodeV, nodeW)
+
+      if (avoid_label_on_border) {
+        const isLabelPointOnBorder = borderRanks.has(nodeV.rank + 1)
+        // we can move the label points down a little bit
+        if (isLabelPointOnBorder) {
+          labelPoint.y += nodesep
+        }
+      }
+
       const origInterWithV = util.intersectRect(nodeV, labelPoint)
       const origInterWithW = util.intersectRect(nodeW, p2)
       let edgePointsArranged = false
       if (isOrthogonal) {
         // to form as orthogonal drawing
-        const nodesInfo = comparePositions(nodeV, nodeW)
         const lastPointInBetween = pointsBetween.length ? pointsBetween[pointsBetween.length - 1] : null
         if (isTopBottom && !nodesInfo.isXEqual) {
           // assumes v is always above w
@@ -445,6 +458,7 @@ function reversePointsForReversedEdges(g: DagreGraph) {
 }
 
 function removeBorderNodes(g: DagreGraph) {
+  const { borderRanks } = g.graph()
   _.forEach(g.nodes(), function (v) {
     if (g.children(v).length) {
       const node: DNode = g.node(v)!
@@ -452,6 +466,8 @@ function removeBorderNodes(g: DagreGraph) {
       const b = g.node(node.borderBottom)
       const l = g.node(_.last(node.borderLeft))
       const r = g.node(_.last(node.borderRight))
+      borderRanks.add(t.rank)
+      borderRanks.add(b.rank)
 
       node.width = Math.abs(r.x - l.x)
       node.height = Math.abs(b.y - t.y)

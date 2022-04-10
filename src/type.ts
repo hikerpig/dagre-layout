@@ -36,6 +36,10 @@ export type GraphOpts = Partial<{
    * - 'ortho' orthogonal edges are axis-aligned and bendings are right-angled
    */
   splines: SplinesType
+  /**
+   * Sometimes - like using orthogonal layout - we should avoid edges sitting on the border
+   */
+  avoid_label_on_border: boolean
 }>
 
 /**
@@ -47,6 +51,7 @@ export interface GraphData extends GraphOpts {
   width: number
   height: number
   nodeRankFactor?: number
+  borderRanks?: Set<number>
 }
 
 export type EdgeOpts = {
