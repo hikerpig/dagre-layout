@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.5](https://github.com/hikerpig/dagre-layout/compare/v0.10.4...v0.10.5) (2022-04-13)
+
+
+### Bug Fixes
+
+* a not-so-perfect solution to avoid edge crossing with othogonal edges ([22235f2](https://github.com/hikerpig/dagre-layout/commit/22235f2552414c72de416fb9af43beaf27642d76))
+
 ### [0.10.4](https://github.com/hikerpig/dagre-layout/compare/v0.10.3...v0.10.4) (2022-04-10)
 
 
