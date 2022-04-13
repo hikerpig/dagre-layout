@@ -4,14 +4,29 @@ import { Graph } from '@pintora/graphlib'
 import acyclic from './acyclic'
 import normalize from './normalize'
 import rank from './rank'
-import util, { normalizeRanks, removeEmptyRanks, comparePositions } from './util'
+import util, {
+  normalizeRanks,
+  removeEmptyRanks,
+  comparePositions,
+  isInsideRange,
+  RangeTupple,
+} from './util'
 import parentDummyChains from './parent-dummy-chains'
 import nestingGraph from './nesting-graph'
 import addBorderSegments from './add-border-segments'
 import coordinateSystem from './coordinate-system'
 import order from './order'
 import position from './position'
-import { DEdge, DNode, GraphData, NodeOpts, DagreGraph, Point, GraphOpts, EdgeOpts } from './type'
+import {
+  DEdge,
+  DNode,
+  GraphData,
+  NodeOpts,
+  DagreGraph,
+  Point,
+  GraphOpts,
+  EdgeOpts,
+} from './type'
 
 function layout(g, opts?: { debugTiming?: boolean }) {
   const time = opts && opts.debugTiming ? util.time : util.notime
@@ -153,7 +168,13 @@ function updateInputGraph(inputGraph: DagreGraph, layoutGraph: DagreGraph) {
 type GraphAttrKey = keyof GraphOpts
 type EdgeAttrKey = keyof EdgeOpts
 
-const graphNumAttrs: GraphAttrKey[] = ['nodesep', 'edgesep', 'ranksep', 'marginx', 'marginy']
+const graphNumAttrs: GraphAttrKey[] = [
+  'nodesep',
+  'edgesep',
+  'ranksep',
+  'marginx',
+  'marginy',
+]
 
 const graphDefaults: Partial<GraphOpts> = {
   ranksep: 50,
@@ -172,7 +193,14 @@ const graphAttrs: GraphAttrKey[] = [
   'splines',
   'avoid_label_on_border',
 ]
-const nodeNumAttrs = ['width', 'height', 'marginl', 'marginr', 'margint', 'marginb']
+const nodeNumAttrs = [
+  'width',
+  'height',
+  'marginl',
+  'marginr',
+  'margint',
+  'marginb',
+]
 const nodeDefaults: NodeOpts = {
   width: 0,
   height: 0,
@@ -362,8 +390,11 @@ function translateGraph(g: DagreGraph) {
 }
 
 function assignNodeIntersects(g: DagreGraph) {
-  const { rankdir, splines, borderRanks, nodesep, avoid_label_on_border } = g.graph()
+  const { rankdir, splines, borderRanks, nodesep, avoid_label_on_border } =
+    g.graph()
   const isTopBottom = rankdir.toUpperCase() === 'TB'
+  const isBottomTop = rankdir.toUpperCase() === 'BT'
+  const isVerticalLayout = isBottomTop || isTopBottom
   const isOrthogonal = splines === 'ortho'
   _.forEach(g.edges(), function (e) {
     const edge: DEdge = g.edge(e)
@@ -404,19 +435,64 @@ function assignNodeIntersects(g: DagreGraph) {
       let edgePointsArranged = false
       if (isOrthogonal) {
         const nodesInfo = comparePositions(nodeV, nodeW)
+        const { leftOne, rightOne, bottomOne, topOne } = nodesInfo
         // to form as orthogonal drawing
-        const lastPointInBetween = pointsBetween.length ? pointsBetween[pointsBetween.length - 1] : null
-        if (isTopBottom && !nodesInfo.isXEqual) {
-          // assumes v is always above w
-          p1 = { x: origInterWithV.x, y: labelPoint.y }
-          p2 = { x: origInterWithW.x, y: (lastPointInBetween || labelPoint).y }
-          edge.points = [origInterWithV, p1, labelPoint, ...pointsBetween, p2, origInterWithW]
+        const lastPointInBetween = pointsBetween.length
+          ? pointsBetween[pointsBetween.length - 1]
+          : null
+        const rangeOfVWCenter: Record<string, RangeTupple> = {
+          x: [leftOne.x, rightOne.x],
+          y: [topOne.y, bottomOne.y],
+        }
+        // in some scenarios we should not bend points
+        // 1. if v and w's non-layout-axis coords are equal
+        // 2. if labelPoint is outside of range of vw center-points. to avoid intersection of edges,
+        //      this is not perfect, we should move conflict resolving before this phase
+        if (isVerticalLayout && !nodesInfo.isXEqual && isInsideRange(labelPoint.x, rangeOfVWCenter.x)) {
+          const topRectBottomBound = topOne.y + topOne.height / 2
+          const bottomRectUpperBound = bottomOne.y - bottomOne.height / 2
+          const newInterWithV = {
+            ...origInterWithV,
+          }
+          const newInterWithW = {
+            ...origInterWithW,
+          }
+          newInterWithV.y = Math.max(origInterWithV.y, topRectBottomBound)
+          newInterWithW.y = Math.min(origInterWithW.y, bottomRectUpperBound)
+
+          p1 = { x: newInterWithV.x, y: labelPoint.y }
+          p2 = { x: newInterWithW.x, y: (lastPointInBetween || labelPoint).y }
+          edge.points = [
+            newInterWithV,
+            p1,
+            labelPoint,
+            ...pointsBetween,
+            p2,
+            newInterWithW,
+          ]
           edgePointsArranged = true
-        } else if (!isTopBottom && !nodesInfo.isYEqual) {
-          // assumes v is always left of w
-          p1 = { x: labelPoint.x, y: origInterWithV.y }
-          p2 = { x: (lastPointInBetween || labelPoint).x, y: origInterWithW.y }
-          edge.points = [origInterWithV, p1, labelPoint, ...pointsBetween, p2, origInterWithW]
+        } else if (!isVerticalLayout && !nodesInfo.isYEqual && isInsideRange(labelPoint.y, rangeOfVWCenter.y)) {
+          const { leftOne, rightOne } = nodesInfo
+          const leftRectRightBound = leftOne.x + leftOne.width / 2
+          const rightRectLeftBound = rightOne.x - rightOne.width / 2
+          const newInterWithV = {
+            ...origInterWithV,
+            x: Math.max(origInterWithV.x, leftRectRightBound),
+          }
+          const newInterWithW = {
+            ...origInterWithW,
+            x: Math.min(origInterWithW.x, rightRectLeftBound),
+          }
+          p1 = { x: labelPoint.x, y: newInterWithV.y }
+          p2 = { x: (lastPointInBetween || labelPoint).x, y: newInterWithW.y }
+          edge.points = [
+            newInterWithV,
+            p1,
+            labelPoint,
+            ...pointsBetween,
+            p2,
+            newInterWithW,
+          ]
           edgePointsArranged = true
         }
       }
@@ -559,6 +635,10 @@ function canonicalize(attrs) {
     newAttrs[k.toLowerCase()] = v
   })
   return newAttrs
+}
+
+const getSlant = (pBase: Point, pTarget: Point) => {
+  return Math.abs(pTarget.y - pBase.y) / Math.abs(pTarget.x - pBase.x)
 }
 
 export default layout

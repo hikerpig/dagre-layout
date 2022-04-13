@@ -248,7 +248,7 @@ export function notime(name, fn) {
 /**
  * compare two objects relative position, maybe rects or points
  */
-export function comparePositions(p1: Point, p2: Point) {
+export function comparePositions<T extends Point>(p1: T, p2: T) {
   const isXEqual = p1.x === p2.x
   const isYEqual = p1.y === p2.y
 
@@ -270,6 +270,14 @@ export function comparePositions(p1: Point, p2: Point) {
     dx,
     dy,
   }
+}
+
+export type RangeTupple = [number, number]
+
+export function isInsideRange(v: number, range: RangeTupple) {
+  const [start, end] = range
+  if (v >= start && v <= end) return true
+  return false
 }
 
 export default {
