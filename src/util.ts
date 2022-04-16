@@ -284,6 +284,10 @@ export function getNum(v: number, defaultValue = 0) {
   return v || defaultValue
 }
 
+export function isNumber(v: unknown): v is number {
+  return typeof v === 'number' && !isNaN(v)
+}
+
 export default {
   addDummyNode,
   simplify,
