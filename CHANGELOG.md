@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.7](https://github.com/hikerpig/dagre-layout/compare/v0.10.6...v0.10.7) (2022-04-16)
+
+
+### Bug Fixes
+
+* a bug, sometimes 'margint' gets to be added more than once ([a51c4a7](https://github.com/hikerpig/dagre-layout/commit/a51c4a7dc2bf99f1ac40871dcf47d53e4334a2f1))
+
 ### [0.10.6](https://github.com/hikerpig/dagre-layout/compare/v0.10.5...v0.10.6) (2022-04-16)
 
 ### Optimize
