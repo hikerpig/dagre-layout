@@ -1,0 +1,54 @@
+body {
+  color: #333;
+}
+
+#wrapper {
+  width: 1000px;
+  margin: 0 auto;
+}
+
+#inputPanel {
+  width: 350px;
+  float: left;
+  padding-right: 10%
+}
+
+#inputPanel textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+textarea.error {
+  color: #f33;
+  border: 1px solid #f33;
+}
+
+#resultPanel {
+  width: 550px;
+  float: left;
+}
+
+#resultPanel svg {
+  border: 1px solid #333;
+}
+
+
+.node rect {
+  stroke: #333;
+  fill: #fff;
+}
+
+.subgraph rect {
+  stroke: #333;
+  fill: #333;
+  fill-opacity: 0.15;
+}
+
+.edge rect {
+  fill: #fff;
+}
+
+path.edge {
+  stroke: #333;
+  fill: none;
+}
