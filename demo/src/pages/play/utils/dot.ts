@@ -11,6 +11,5 @@ import dotparser, { Graph } from 'dotparser'
 
 export function parseDot(str: string) {
   const result = dotparser(str)
-  console.log('r', result)
   return result
 }
