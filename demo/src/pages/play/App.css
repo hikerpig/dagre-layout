@@ -7,12 +7,6 @@ body {
   margin: 0 auto;
 }
 
-#inputPanel {
-  width: 350px;
-  float: left;
-  padding-right: 10%
-}
-
 #inputPanel textarea {
   width: 100%;
   resize: vertical;
