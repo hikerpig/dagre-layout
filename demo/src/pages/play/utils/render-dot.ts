@@ -1,16 +1,18 @@
-import dagre, { DagreGraph } from '#dagre-layout'
+import dagre, { DagreGraph, DNode } from '#dagre-layout'
+import { GraphicsIR } from '@pintora/core'
+import { makeEmptyGroup, makeMark } from '@pintora/diagrams/lib/util/artist-util'
+import { getPointsLinearPath } from '@pintora/diagrams/lib/util/line-util'
 import { Graph } from '@pintora/graphlib'
 import { render as pintoraRender } from '@pintora/renderer'
-import { makeMark, makeEmptyGroup } from '@pintora/diagrams/lib/util/artist-util'
-import { getPointsLinearPath } from '@pintora/diagrams/lib/util/line-util'
-import { parseDot } from '../../utils/dot'
-import { GraphicsIR } from '@pintora/core'
+import { Stmt } from 'dotparser'
+import { parseDot } from './dot'
 
-type RenderDotOpts = {
+export type RenderDotOpts = {
   input: string
   container: HTMLDivElement
   force?: boolean
   debugTiming?: boolean
+  prepareDagreLayout?(g: DagreGraph): void
 }
 
 let lastDotStr = ''
@@ -24,25 +26,40 @@ export function renderDot(opts: RenderDotOpts) {
     lastDotStr = dotStr
     try {
       const g = formGraph(dotStr)
+      if (opts.prepareDagreLayout) opts.prepareDagreLayout(g)
       time('render', function () { render(g, opts) })
-      // window.currentG = g
+      ;(window as any).currentG = g
     } catch (e) {
-      // input.className = 'error'
       throw e
     }
   }
 }
 
+type NodeData = DNode & {
+  fill?: string
+  stroke?: string
+}
+
+function getAttrs(stmt: Stmt) {
+  const attrs: any = {}
+  for (const attr of stmt.attr_list) {
+    attrs[attr.id] = attr.eq
+  }
+  return attrs
+}
+
 function formGraph(str: string) {
   const result = parseDot(str)
+  console.log('dot result', result)
   const g = new Graph({ compound: true })
     .setGraph({})
   const firstItem = result[0]
 
   function tryAddNode(id: string) {
     if (!g.node(id)) {
+      const width = Math.max(20, id.length * 10)
       g.setNode(id, {
-        width: 20,
+        width,
         height: 20,
       })
     }
@@ -50,10 +67,13 @@ function formGraph(str: string) {
 
   firstItem.children.forEach((stmt) => {
     if (stmt.type === 'edge_stmt') {
+      const attrs = getAttrs(stmt)
+
       for (let i = 1; i < stmt.edge_list.length; i++) {
         const e = stmt.edge_list[i]
         const prevE = stmt.edge_list[i - 1]
-        const label = `${prevE.id}-${e.id}`
+        // const label = attrs.label || `${prevE.id}-${e.id}`
+        const label = attrs.label || ''
         const prevId = String(prevE.id)
         const currentId = String(e.id!)
         g.setEdge(prevId, currentId, { label })
@@ -61,29 +81,19 @@ function formGraph(str: string) {
         tryAddNode(currentId)
       }
     } else if (stmt.type === 'node_stmt') {
-      console.log('node stmt', stmt)
+      const attrs = getAttrs(stmt)
+      const id = String(stmt.node_id.id)
+      tryAddNode(id)
+      const node = g.node(id)
+      if (node) {
+        Object.assign(node, attrs)
+      }
     }
   })
 
+
   return g
 }
-
-// function formGraph() {
-//   const g = new graphlib.Graph({ compound: true })
-//     .setGraph({})
-
-//   g.setNode('a', { label: 'a', marginl: 10 })
-//   g.setNode('b', { label: 'b', marginr: 30, margint: 15 })
-//   g.setNode('c', { label: 'c', marginl: 15, marginr: 60 })
-//   g.setNode('d', { label: 'd', marginr: 10, margint: 0 })
-//   g.setNode('e', { label: 'e', marginl: 25, margint: 40 })
-//   g.setEdge('a', 'b', { label: 'ab' })
-//   g.setEdge('a', 'd', { label: 'ad' })
-//   g.setParent('b', 'c')
-//   g.setParent('d', 'e')
-
-//   return g
-// }
 
 function render(g: DagreGraph, opts: RenderDotOpts) {
   dagre.layout(g, { debugTiming: opts.debugTiming })
@@ -93,14 +103,14 @@ function render(g: DagreGraph, opts: RenderDotOpts) {
   opts.container.innerHTML = '' // clear
 
   g.nodes().forEach((n) => {
-    const node = g.node(n)
+    const node: NodeData = g.node(n)
     const rect = makeMark('rect', {
       width: node.width,
       height: node.height,
       x: node.x - node.width / 2,
       y: node.y - node.height / 2,
-      fill: '#fff',
-      stroke: '#000'
+      fill: node.fill || '#fff',
+      stroke: node.stroke || '#000'
     })
     const textMark = makeMark('text', {
       text: n,
@@ -120,6 +130,9 @@ function render(g: DagreGraph, opts: RenderDotOpts) {
       path: p,
       stroke: '#000',
     })
+    if (edge.label) {
+      console.log('edge label', edge.label)
+    }
     rootMark.children.push(line)
   })
   const graphicsIR: GraphicsIR = {
