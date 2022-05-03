@@ -4,11 +4,14 @@ specifiers:
   '@geist-ui/core': ^2.3.8
   '@pintora/core': ^0.4.0
   '@pintora/diagrams': ^0.4.4
-  '@pintora/renderer': 0.4.0
+  '@pintora/renderer': 0.4.2
   '@types/react': ^18.0.0
   '@types/react-dom': ^18.0.0
   '@vitejs/plugin-react': ^1.3.0
+  dedent: ^0.7.0
   dotparser: ^1.1.0
+  mobx: ^6.5.0
+  mobx-react: ^7.3.0
   react: ^18.0.0
   react-dom: ^18.0.0
   react-router-dom: ^6.3.0
@@ -20,8 +23,11 @@ dependencies:
   '@geist-ui/core': 2.3.8_react-dom@18.1.0+react@18.1.0
   '@pintora/core': 0.4.0
   '@pintora/diagrams': 0.4.4
-  '@pintora/renderer': 0.4.0
+  '@pintora/renderer': 0.4.2
+  dedent: 0.7.0
   dotparser: 1.1.0
+  mobx: 6.5.0
+  mobx-react: 7.3.0_bdf1a6292e332f993648c63c29f77c32
   react: 18.1.0
   react-dom: 18.1.0_react@18.1.0
   react-router-dom: 6.3.0_react-dom@18.1.0+react@18.1.0
@@ -452,6 +458,16 @@ packages:
       tinycolor2: 1.4.2
     dev: false
 
+  /@pintora/core/0.4.1:
+    resolution: {integrity: sha512-Sy6u/iHrJz783Qk8YDL+mGAcjObRwF7QW0fi3aPHDWlVO8LuIFfa+6iFwHK6Gr38jF1XhCVT/TBKl1+MzeW2Bg==}
+    dependencies:
+      '@antv/matrix-util': 3.0.4
+      '@types/node': 14.18.16
+      clone-deep: 4.0.1
+      deepmerge: 4.2.2
+      tinycolor2: 1.4.2
+    dev: false
+
   /@pintora/dagre/0.10.7:
     resolution: {integrity: sha512-8ybSOnpBd5+sPPa/xDdgQ1CooJF28eqroQaevPlTcnRqeM5BJIj1etLgsKuWweR8VEj0CGUvruwqv+AfIcvxWQ==}
     dependencies:
@@ -482,12 +498,12 @@ packages:
       lodash-es: 4.17.21
     dev: false
 
-  /@pintora/renderer/0.4.0:
-    resolution: {integrity: sha512-p+U7X8ceCSu6eMx+YWFk0yGqpFQpFfJvQdcpn2jaPfp9kC0Zo8DIBmpUyoQRGMmzJ91zeCgkDXUYCpJv2wdDgw==}
+  /@pintora/renderer/0.4.2:
+    resolution: {integrity: sha512-lnxLXzyDkNncIY/ginZ+TSUElfyc+ypiKCKYdtxv1ylq93AaoFy/S+KRTJY+DvRlcFDGT+GS1ju6Sch9vMcOQg==}
     dependencies:
       '@antv/g-canvas': 0.5.12
       '@antv/g-svg': 0.5.6
-      '@pintora/core': 0.4.0
+      '@pintora/core': 0.4.1
       '@types/node': 14.18.16
     dev: false
 
@@ -1068,6 +1084,47 @@ packages:
 
   /minimist/1.2.6:
     resolution: {integrity: sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==}
+    dev: false
+
+  /mobx-react-lite/3.3.0_bdf1a6292e332f993648c63c29f77c32:
+    resolution: {integrity: sha512-U/kMSFtV/bNVgY01FuiGWpRkaQVHozBq5CEBZltFvPt4FcV111hEWkgwqVg9GPPZSEuEdV438PEz8mk8mKpYlA==}
+    peerDependencies:
+      mobx: ^6.1.0
+      react: ^16.8.0 || ^17
+      react-dom: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      mobx: 6.5.0
+      react: 18.1.0
+      react-dom: 18.1.0_react@18.1.0
+    dev: false
+
+  /mobx-react/7.3.0_bdf1a6292e332f993648c63c29f77c32:
+    resolution: {integrity: sha512-RGEcwZokopqyJE5JPwXKB9FWMSqFM9NJVO2QPI+z6laJTJeBHqvPicjnKgY5mvihxTeXB1+72TnooqUePeGV1g==}
+    peerDependencies:
+      mobx: ^6.1.0
+      react: ^16.8.0 || ^17
+      react-dom: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      mobx: 6.5.0
+      mobx-react-lite: 3.3.0_bdf1a6292e332f993648c63c29f77c32
+      react: 18.1.0
+      react-dom: 18.1.0_react@18.1.0
+    dev: false
+
+  /mobx/6.5.0:
+    resolution: {integrity: sha512-pHZ/cySF00FVENDWIDzJyoObFahK6Eg4d0papqm6d7yMkxWTZ/S/csqJX1A3PsYy4t5k3z2QnlwuCfMW5lSEwA==}
     dev: false
 
   /moo/0.5.1:

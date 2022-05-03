@@ -1,36 +1,41 @@
+import { Checkbox, Grid, Page, Select, Textarea } from '@geist-ui/core'
+import { reaction } from 'mobx'
+import { observer } from 'mobx-react'
 import React, {
   ChangeEvent,
   useCallback,
   useEffect,
   useRef,
-  useState,
+  useState
 } from 'react'
-import { Checkbox, Textarea, Page, Grid } from '@geist-ui/core'
-import { renderDot } from './render-dot'
+import { EXAMPLES } from 'src/pages/play/data/examples'
+import type { Model } from '../../store'
+import { renderDot, RenderDotOpts } from '../../utils/render-dot'
 
-interface Props {}
+interface Props {
+  model: Model
+}
 
-const v = `digraph graphname {
-  a -> b -> c;
-  b -> d;
-}`
-
-const Console = ({}: Props) => {
-  const [content, setContent] = useState(v)
+const Console = observer(({ model }: Props) => {
+  const [content, setContent] = useState(EXAMPLES.simple.source)
   const [enableTiming, setEnableTiming] = useState(false)
   const [enableAutoSync, setEnableAutoSync] = useState(true)
   const resultPanelRef = useRef<HTMLDivElement>(null)
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+
   const handleContentChange = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
       const value = e.target.value
+      updateContent(value)
       if (resultPanelRef.current && enableAutoSync) {
+        const currentExample = model.currentExample
         renderDot({
           input: value,
           container: resultPanelRef.current,
           debugTiming: enableTiming,
+          prepareDagreLayout: currentExample?.prepareDagreLayout,
         })
       }
-      setContent(value)
     },
     [enableAutoSync]
   )
@@ -40,23 +45,56 @@ const Console = ({}: Props) => {
     setEnableTiming(checked)
   }, [])
 
-  const handleAutoSyncChange = useCallback((e: any) => {
-    const checked = e.target.checked
-    setEnableAutoSync(checked)
-    if (checked) {
-      updateResult(content)
-    }
-  }, [content])
+  const updateContent = useCallback(
+    (v: string) => {
+      textAreaRef.current.value = v
+      setContent(v)
+    },
+    [textAreaRef]
+  )
 
-  const updateResult = useCallback((content: string) => {
-    renderDot({
-      input: content,
-      container: resultPanelRef.current,
-    })
-  }, [resultPanelRef])
+  const handleAutoSyncChange = useCallback(
+    (e: any) => {
+      const checked = e.target.checked
+      setEnableAutoSync(checked)
+      if (checked) {
+        updateResult(content)
+      }
+    },
+    [content]
+  )
+
+  const updateResult = useCallback(
+    (content: string, opts: Partial<RenderDotOpts> = {}) => {
+      renderDot({
+        input: content,
+        container: resultPanelRef.current,
+        ...opts,
+      })
+    },
+    [resultPanelRef]
+  )
 
   useEffect(() => {
-    updateResult(content)
+    const dispose = reaction(
+      () => {
+        return model.currentExample
+      },
+      (currentExample) => {
+        if (currentExample) {
+          updateContent(currentExample.source)
+          updateResult(currentExample.source, currentExample)
+        }
+      },
+      { fireImmediately: true }
+    )
+    return () => {
+      dispose()
+    }
+  }, [])
+
+  const handleSelectExample = useCallback((exampleId) => {
+    model.selectExample(exampleId)
   }, [])
 
   return (
@@ -65,14 +103,32 @@ const Console = ({}: Props) => {
         <h2>Dagre Debug Console</h2>
       </Page.Header>
       <Page.Body>
+        <div>
+          <label>
+            <b>Choose an example </b>
+          </label>
+          <Select
+            placeholder="example"
+            value={model.exampleId}
+            onChange={handleSelectExample}
+          >
+            {Object.entries(EXAMPLES).map(([k, example]) => {
+              return (
+                <Select.Option key={k} value={k}>
+                  {example.description}
+                </Select.Option>
+              )
+            })}
+          </Select>
+        </div>
         <Grid.Container gap={2} justify="center">
           <Grid xs={12}>
             <div id="inputPanel">
               <Textarea
                 rows={20}
                 cols={60}
-                value={content}
                 onChange={handleContentChange}
+                ref={textAreaRef}
               />
               <div>
                 <Checkbox
@@ -99,6 +155,6 @@ const Console = ({}: Props) => {
       </Page.Body>
     </Page>
   )
-}
+})
 
 export default Console
