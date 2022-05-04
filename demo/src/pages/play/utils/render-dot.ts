@@ -12,7 +12,7 @@ export type RenderDotOpts = {
   container: HTMLDivElement
   force?: boolean
   debugTiming?: boolean
-  prepareDagreLayout?(g: DagreGraph): void
+  prepareDagreLayout?(g: Graph): void
 }
 
 let lastDotStr = ''
@@ -25,7 +25,7 @@ export function renderDot(opts: RenderDotOpts) {
   if (dotStr !== lastDotStr || opts.force) {
     lastDotStr = dotStr
     try {
-      const g = formGraph(dotStr)
+      const g = formGraph(dotStr || '')
       if (opts.prepareDagreLayout) opts.prepareDagreLayout(g)
       time('render', function () { render(g, opts) })
       ;(window as any).currentG = g

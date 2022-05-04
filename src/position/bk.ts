@@ -93,7 +93,7 @@ function findType2Conflicts(g: DagreGraph, layering) {
 
   function visitLayer(north: string[], south: string[]) {
     let prevNorthPos = -1
-    let nextNorthPos
+    let nextNorthPos: number
     let southPos = 0
 
     _.forEach(south, function (v, southLookahead: number) {
@@ -156,7 +156,7 @@ function hasConflict(conflicts, v, w) {
  * we're trying to form a block with, we also ignore that possibility - our
  * blocks would be split in that scenario.
  */
-function verticalAlignment(g: DagreGraph, layering: Layering, conflicts, neighborFn) {
+function verticalAlignment(g: DagreGraph, layering: Layering, conflicts, neighborFn: (arg0: string) => any) {
   const root: Record<string, string> = {}
   const align: Record<string, string> = {}
   const pos: Record<string, number> = {}
@@ -201,7 +201,7 @@ function verticalAlignment(g: DagreGraph, layering: Layering, conflicts, neighbo
   return { root: root, align: align }
 }
 
-function horizontalCompaction(g: DagreGraph, layering: Layering, root, alignMap: Record<string, string>, reverseSep: boolean) {
+function horizontalCompaction(g: DagreGraph, layering: Layering, root: Record<string, string>, alignMap: Record<string, string>, reverseSep: boolean) {
   // This portion of the algorithm differs from BK due to a number of problems.
   // Instead of their algorithm we construct a new block graph and do two
   // sweeps. The first sweep places blocks with the smallest possible
@@ -328,12 +328,13 @@ function alignCoordinates(xss: XSegs, alignTo: Record<string, number>) {
   })
 }
 
-function balance(xss, align: string) {
+function balance(xss: XSegs, align: string): {[key: string]: number} {
   return _.mapValues(xss.ul, function (ignore, v) {
     if (align) {
       return xss[align.toLowerCase()][v]
     } else {
       const xs = _.sortBy(_.map(xss, v))
+      // if no align is specified, use median value (there are 4 vertices, get value between second and the third)
       return (xs[1] + xs[2]) / 2
     }
   })
@@ -342,7 +343,9 @@ function balance(xss, align: string) {
 type Layer = string[]
 type Layering = Layer[]
 
-type XSegs = Record<string, Record<string, number>>
+type XSSKey = 'ul' | 'ur' | 'dl' | 'dr'
+
+type XSegs = Record<XSSKey, Record<string, number>>
 
 export function positionX(g: DagreGraph) {
   const layering = util.buildLayerMatrix(g)
@@ -350,8 +353,7 @@ export function positionX(g: DagreGraph) {
     findType1Conflicts(g, layering),
     findType2Conflicts(g, layering)
   )
-
-  const xss: XSegs = {}
+  const xss: XSegs = {} as any
   let adjustedLayering: Layering
   _.forEach(['u', 'd'], function (vert) {
     adjustedLayering = vert === 'u' ? layering : _.values(layering).reverse()
@@ -363,7 +365,7 @@ export function positionX(g: DagreGraph) {
       }
 
       const neighborFn = (vert === 'u' ? g.predecessors : g.successors).bind(g)
-      const align = verticalAlignment(
+      const verticalAlign = verticalAlignment(
         g,
         adjustedLayering,
         conflicts,
@@ -372,8 +374,8 @@ export function positionX(g: DagreGraph) {
       let xs = horizontalCompaction(
         g,
         adjustedLayering,
-        align.root,
-        align.align,
+        verticalAlign.root,
+        verticalAlign.align,
         horiz === 'r'
       )
       if (horiz === 'r') {

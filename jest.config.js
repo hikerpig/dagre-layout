@@ -1,8 +1,8 @@
 module.exports = {
   transform: {
-    '\\.[jt]sx?$': 'babel-jest',
+    '\\.[jt]sx?$': ['esbuild-jest', { sourcemap: true }],
   },
-  testRegex: 'test/.+?-test\\.js',
+  testRegex: 'test/.+?-test\\.[jt]s',
   testPathIgnorePatterns: ['test/e2e/.*\\.js'],
   transformIgnorePatterns: ['node_modules/(?!lodash-es/.*)'],
 }
