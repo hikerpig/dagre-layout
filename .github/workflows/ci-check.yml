@@ -1,0 +1,44 @@
+name: CI Check
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+      - uses: pnpm/action-setup@v2.2.1
+        with:
+          version: 6.32.3
+          run_install: true
+      - name: build, and test
+        run: |
+          pnpm run build
+          pnpm run test
+        env:
+          CI: true
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success()    # run this step even if previous step failed
+        with:
+          name: JEST Tests            # Name of the check run which will be created
+          path: reports/junit.xml    # Path to test results
+          reporter: jest-junit        # Format of test results
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          files: coverage/coverage-final.json
+          flags: unittests # optional
+          name: codecov-umbrella # optional

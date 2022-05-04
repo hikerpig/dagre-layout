@@ -1,4 +1,5 @@
 module.exports = {
+  reporters: ['default', ['jest-junit', { outputDirectory: './reports' }]],
   transform: {
     '\\.[jt]sx?$': ['esbuild-jest', { sourcemap: true }],
   },
