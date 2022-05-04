@@ -228,7 +228,10 @@ const edgeAttrs: EdgeAttrKey[] = ['labelpos']
  * attributes can influence layout.
  */
 function buildLayoutGraph<T extends Graph>(inputGraph: T): DagreGraph {
-  const g = new Graph<NodeOpts, DEdge, GraphOpts>({ multigraph: true, compound: true })
+  const g = new Graph<NodeOpts, DEdge, GraphOpts>({
+    multigraph: true,
+    compound: true,
+  })
   const graph = canonicalize(inputGraph.graph()) as GraphData
 
   g.setGraph(
@@ -345,7 +348,10 @@ function translateGraph(g: DagreGraph) {
   function getExtremes(attrs: DNode | DEdge) {
     const x = attrs.x
     const y = attrs.y
-    const w = Math.max(('minwidth' in attrs ? attrs.minwidth: 0) || 0, attrs.width)
+    const w = Math.max(
+      ('minwidth' in attrs ? attrs.minwidth : 0) || 0,
+      attrs.width
+    )
     const h = attrs.height
     minX = Math.min(minX, x - w / 2)
     maxX = Math.max(maxX, x + w / 2)
@@ -449,7 +455,11 @@ function assignNodeIntersects(g: DagreGraph) {
         // 1. if v and w's non-layout-axis coords are equal
         // 2. if labelPoint is outside of range of vw center-points. to avoid intersection of edges,
         //      this is not perfect, we should move conflict resolving before this phase
-        if (isVerticalLayout && !nodesInfo.isXEqual && isInsideRange(labelPoint.x, rangeOfVWCenter.x)) {
+        if (
+          isVerticalLayout &&
+          !nodesInfo.isXEqual &&
+          isInsideRange(labelPoint.x, rangeOfVWCenter.x)
+        ) {
           const topRectBottomBound = topOne.y + topOne.height / 2
           const bottomRectUpperBound = bottomOne.y - bottomOne.height / 2
           const newInterWithV = {
@@ -463,7 +473,8 @@ function assignNodeIntersects(g: DagreGraph) {
 
           p1 = { x: newInterWithV.x, y: labelPoint.y }
           p2 = { x: newInterWithW.x, y: (lastPointInBetween || labelPoint).y }
-          edge.points = [
+
+          const newPoints = [
             newInterWithV,
             p1,
             labelPoint,
@@ -471,8 +482,29 @@ function assignNodeIntersects(g: DagreGraph) {
             p2,
             newInterWithW,
           ]
+          // try to form a linear segment if all points are between v and w's overlap in x axis
+          const overlapXRange: [number, number] = [
+            rightOne.x - rightOne.width / 2,
+            leftOne.x + leftOne.width / 2,
+          ]
+          if (overlapXRange[0] < overlapXRange[1]) {
+            const isAllInRange = newPoints.every((p) => {
+              return isInsideRange(p.x, overlapXRange)
+            })
+            if (isAllInRange) {
+              for (const p of newPoints) {
+                p.x = labelPoint.x
+              }
+            }
+          }
+
+          edge.points = newPoints
           edgePointsArranged = true
-        } else if (!isVerticalLayout && !nodesInfo.isYEqual && isInsideRange(labelPoint.y, rangeOfVWCenter.y)) {
+        } else if (
+          !isVerticalLayout &&
+          !nodesInfo.isYEqual &&
+          isInsideRange(labelPoint.y, rangeOfVWCenter.y)
+        ) {
           const { leftOne, rightOne } = nodesInfo
           const leftRectRightBound = leftOne.x + leftOne.width / 2
           const rightRectLeftBound = rightOne.x - rightOne.width / 2
@@ -486,7 +518,8 @@ function assignNodeIntersects(g: DagreGraph) {
           }
           p1 = { x: labelPoint.x, y: newInterWithV.y }
           p2 = { x: (lastPointInBetween || labelPoint).x, y: newInterWithW.y }
-          edge.points = [
+
+          const newPoints = [
             newInterWithV,
             p1,
             labelPoint,
@@ -494,6 +527,23 @@ function assignNodeIntersects(g: DagreGraph) {
             p2,
             newInterWithW,
           ]
+          // try to form a linear segment if all points are between v and w's overlap in y axis
+          const overlapYRange: [number, number] = [
+            bottomOne.y - bottomOne.height / 2,
+            topOne.y + topOne.height / 2,
+          ]
+          if (overlapYRange[0] < overlapYRange[1]) {
+            const isAllInRange = newPoints.every((p) => {
+              return isInsideRange(p.y, overlapYRange)
+            })
+            if (isAllInRange) {
+              for (const p of newPoints) {
+                p.y = labelPoint.y
+              }
+            }
+          }
+
+          edge.points = newPoints
           edgePointsArranged = true
         }
       }

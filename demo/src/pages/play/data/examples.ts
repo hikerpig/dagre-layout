@@ -3,7 +3,7 @@ import dedent from 'dedent'
 import { RenderDotOpts } from '../utils/render-dot'
 
 export type Example = {
-  source: string
+  source?: string
   description: string
   prepareDagreLayout?: RenderDotOpts['prepareDagreLayout']
 }
@@ -43,6 +43,7 @@ export const EXAMPLES: Record<string, Example> = {
       b -> f;
     }
     `,
+
     prepareDagreLayout(g) {
       g.setGraph({
         splines: 'ortho'

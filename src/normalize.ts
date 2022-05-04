@@ -52,7 +52,7 @@ function normalizeEdge(g: DagreGraph, e: Edge) {
       edgeObj: e,
       rank: vRank,
     }
-    dummy = util.addDummyNode(g, 'edge', attrs, '_d')
+    dummy = util.addDummyNode(g, 'edge', attrs, '_d') // dummy vertice for edge label
     if (vRank === labelRank) {
       attrs.width = edgeLabel.width
       attrs.height = edgeLabel.height
