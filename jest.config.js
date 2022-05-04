@@ -4,5 +4,5 @@ module.exports = {
   },
   testRegex: 'test/.+?-test\\.[jt]s',
   testPathIgnorePatterns: ['test/e2e/.*\\.js'],
-  transformIgnorePatterns: ['node_modules/(?!lodash-es/.*)'],
+  transformIgnorePatterns: ['node_modules/.pnpm/(?!lodash-es.*)'],
 }

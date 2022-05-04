@@ -19,14 +19,11 @@
   ],
   "scripts": {
     "format": "prettier --fix -w src",
-    "karma": "node -r @babel/register node_modules/.bin/karma start",
-    "test": "yarn jest --coverage",
-    "e2e-test": "yarn karma --single-run",
-    "bench": "node -r @babel/register lib/bench.js",
-    "build": "NODE_ENV=production yarn rollup -c",
-    "typecheck": "yarn tsc --noEmit",
-    "watch": "yarn build --watch",
-    "upgrade": "yarn-upgrade-all"
+    "test": "pnpx jest --coverage",
+    "_bench": "node -r @babel/register lib/bench.js",
+    "build": "NODE_ENV=production pnpx rollup -c",
+    "typecheck": "pnpx tsc --noEmit",
+    "watch": "pnpx build --watch"
   },
   "dependencies": {
     "@pintora/graphlib": "^2.2.2",
@@ -50,11 +47,6 @@
     "esbuild-jest": "^0.5.0",
     "husky": "^0.14.3",
     "jest": "^27.0.4",
-    "karma": "^6.3.4",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-firefox-launcher": "^1.1.0",
-    "karma-mocha": "^1.3.0",
-    "karma-safari-launcher": "^1.0.0",
     "mocha": "^5.0.4",
     "prettier": "^2.3.1",
     "rollup": "^2.52.1",
@@ -62,8 +54,7 @@
     "sprintf": "^0.1.5",
     "ts-jest": "^27.0.3",
     "tslib": "^2.3.0",
-    "typescript": "^4.3.4",
-    "yarn-upgrade-all": "^0.3.0"
+    "typescript": "^4.3.4"
   },
   "repository": {
     "type": "git",

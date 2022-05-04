@@ -1,3 +1,0 @@
---ignore-file=match:/^yarn\.lock$/
---ignore-dir=dist
---ignore-dir=coverage

@@ -15,7 +15,7 @@ For more details, including examples and configuration options, please see the [
 ## Changes compared to dagrejs/dagre
 
 - Upgrade all the dependencies (loadash 3 => 4)
-- Yarn instead of NPM
+- PNPM instead of NPM
 - Get rid of PhantomJS
 - Written in Typescript
 - Use rollup instead of browserify
@@ -30,21 +30,21 @@ For more details, including examples and configuration options, please see the [
 ## Setup
 
 ```
-yarn install
+pnpm install
 ```
 
 
 ## Build
 
 ```
-yarn build
+pnpm build
 ```
 
 
 ## Test
 
 ```
-yarn test
+pnpm test
 ```
 
 
