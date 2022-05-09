@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.8](https://github.com/hikerpig/dagre-layout/compare/v0.10.7...v0.10.8) (2022-05-09)
+
+
+### Features
+
+* improve orthogonal edge by reducing bendpoints under some conditions ([74cca4b](https://github.com/hikerpig/dagre-layout/commit/74cca4babbb0f7796ec008adba40f5a989dc6cd4))
+
 ### [0.10.7](https://github.com/hikerpig/dagre-layout/compare/v0.10.6...v0.10.7) (2022-04-16)
 
 
