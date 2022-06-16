@@ -42,3 +42,9 @@ jobs:
           files: coverage/coverage-final.json
           flags: unittests # optional
           name: codecov-umbrella # optional
+      - name: Foresight Test Report Uploader
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-result-jest
+          path: reports
