@@ -586,6 +586,7 @@ function reversePointsForReversedEdges(g: DagreGraph) {
   })
 }
 
+// remove dummy border nodes for subgraph
 function removeBorderNodes(g: DagreGraph) {
   const { borderRanks } = g.graph()
   _.forEach(g.nodes(), function (v) {
@@ -598,7 +599,17 @@ function removeBorderNodes(g: DagreGraph) {
       borderRanks.add(t.rank)
       borderRanks.add(b.rank)
 
-      node.width = Math.abs(r.x - l.x)
+      const widthBetweenBorder = Math.abs(r.x - l.x)
+      node.width = Math.max(widthBetweenBorder, node.minwidth || 0)
+      if (node.minwidth && node.minwidth > widthBetweenBorder) {
+        const wOffset = node.minwidth - widthBetweenBorder
+        const originalRightEdge = Math.min(l.x, r.x) + widthBetweenBorder
+
+        // move all the nodes those are right of original right edge,
+        // so that there is enough space for the expandsion to node.minwidth .
+        addOffsetFromX(wOffset, originalRightEdge)
+      }
+
       node.height = Math.abs(b.y - t.y)
       node.x = l.x + node.width / 2
       node.y = t.y + node.height / 2
@@ -610,6 +621,22 @@ function removeBorderNodes(g: DagreGraph) {
       g.removeNode(v)
     }
   })
+
+  function addOffsetFromX(wOffset: number, startX: number) {
+    const visited: Record<string, boolean> = {}
+
+    const dfs = (v: string) => {
+      if (visited[v]) return
+      visited[v] = true
+
+      const node: DNode = g.node(v)!
+      if (node.x >= startX) node.x += wOffset
+
+      for (const child of g.children(v)) dfs(child)
+    }
+
+    for (const v of g.nodes()) dfs(v)
+  }
 }
 
 function removeSelfEdges(g: DagreGraph) {
