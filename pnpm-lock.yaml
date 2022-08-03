@@ -11,6 +11,7 @@ specifiers:
   '@rollup/plugin-typescript': ^8.2.1
   '@types/chai': ^4.3.1
   '@types/jest': ^26.0.23
+  '@types/lodash': ^4.14.182
   '@types/lodash-es': ^4.17.4
   benchmark: ^2.1.4
   chai: ^4.1.2
@@ -43,6 +44,7 @@ devDependencies:
   '@rollup/plugin-typescript': 8.3.1_r6ybddu5nhzwadf3r4ke67kfnq
   '@types/chai': 4.3.1
   '@types/jest': 26.0.24
+  '@types/lodash': 4.14.182
   '@types/lodash-es': 4.17.6
   benchmark: 2.1.4
   chai: 4.3.6
@@ -1683,11 +1685,11 @@ packages:
   /@types/lodash-es/4.17.6:
     resolution: {integrity: sha512-R+zTeVUKDdfoRxpAryaQNRKk3105Rrgx2CFRClIgRGaqDTdjsm8h6IYA8ir584W3ePzkZfst5xIgDwYrlh9HLg==}
     dependencies:
-      '@types/lodash': 4.14.181
+      '@types/lodash': 4.14.182
     dev: true
 
-  /@types/lodash/4.14.181:
-    resolution: {integrity: sha512-n3tyKthHJbkiWhDZs3DkhkCzt2MexYHXlX0td5iMplyfwketaOeKboEVBqzceH7juqvEg3q5oUoBFxSLu7zFag==}
+  /@types/lodash/4.14.182:
+    resolution: {integrity: sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==}
     dev: true
 
   /@types/node/17.0.23:
