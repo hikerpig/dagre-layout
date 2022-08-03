@@ -71,6 +71,8 @@ export type NodeOpts = {
   marginr?: number
   margint?: number
   marginb?: number
+  paddingt?: number
+  paddingb?: number
   /** assign to a compound node */
   minwidth?: number
 }

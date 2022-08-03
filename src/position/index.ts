@@ -15,6 +15,8 @@ function position(g: DagreGraph) {
 type RankOffsetItem = {
   marginTop: number
   marginBottom: number
+  paddingTop: number
+  paddingBottom: number
 }
 
 function doPositionY(g: DagreGraph) {
@@ -32,36 +34,57 @@ function doPositionY(g: DagreGraph) {
       rankOffsets[rank] = {
         marginTop: 0,
         marginBottom: 0,
+        paddingTop: 0,
+        paddingBottom: 0,
       }
     }
 
     const item = rankOffsets[rank]
     item.marginTop = Math.max(getNum(node.margint), item.marginTop)
     item.marginBottom = Math.max(getNum(node.marginb), item.marginBottom)
+    item.paddingTop = Math.max(getNum(node.paddingt), item.paddingTop)
+    item.paddingBottom = Math.max(getNum(node.paddingb), item.paddingBottom)
   })
 
   // console.log('rank ofsets', rankOffsets )
 
-  _.forEach(layering, function (layer) {
-    let yOffset1 = 0 // upper offset due to parent margint
-    let yOffset2 = 0 // bottom offset due to parent marginb
+  _.forEach(layering, function (layer, i) {
+    let yOffsetMarginT = 0 // upper offset due to parent margint
+    let yOffsetMarginB = 0 // bottom offset due to parent marginb
+    let yOffsetPaddingT = 0
+    let yOffsetPaddingB = 0
     let maxHeight = 0
     for (const v of layer) {
       if (v) {
         const node: DNode = g.node(v)
         if (rankOffsets[node.rank]) {
           const item = rankOffsets[node.rank]
-          yOffset1 = Math.max(item.marginTop, yOffset1)
-          yOffset2 = Math.max(item.marginBottom, yOffset2)
+          yOffsetMarginT = Math.max(item.marginTop, yOffsetMarginT)
+          yOffsetMarginB = Math.max(item.marginBottom, yOffsetMarginB)
+          yOffsetPaddingT = Math.max(item.paddingTop, yOffsetPaddingT)
+          yOffsetPaddingB = Math.max(item.paddingBottom, yOffsetPaddingB)
         }
 
-        maxHeight = Math.max(maxHeight, node.height + getNum(node.margint) + getNum(node.marginb))
+        maxHeight = Math.max(
+          maxHeight,
+          node.height +
+            getNum(node.margint) +
+            getNum(node.marginb) +
+            getNum(node.paddingt) +
+            getNum(node.paddingb)
+        )
       }
     }
     for (const v of layer) {
-      if (v) g.node(v).y = prevY + yOffset1 + maxHeight / 2
+      if (v) g.node(v).y = prevY + yOffsetMarginT + maxHeight / 2
     }
-    prevY += maxHeight + rankSep + yOffset1 + yOffset2
+    prevY +=
+      maxHeight +
+      rankSep +
+      yOffsetMarginT +
+      yOffsetMarginB +
+      yOffsetPaddingT +
+      yOffsetPaddingB
   })
 }
 

@@ -200,6 +200,8 @@ const nodeNumAttrs = [
   'marginr',
   'margint',
   'marginb',
+  'paddingt',
+  'paddingb',
   'minwidth',
 ]
 const nodeDefaults: NodeOpts = {
