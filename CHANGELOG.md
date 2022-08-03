@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.10](https://github.com/hikerpig/dagre-layout/compare/v0.10.9...v0.10.10) (2022-08-03)
+
+
+### Features
+
+* make space for subgraph node.minwidth ([3787c97](https://github.com/hikerpig/dagre-layout/commit/3787c97b61db0c45f8632d7c7260835217041ea7))
+* support subgraph padding t and b ([4493992](https://github.com/hikerpig/dagre-layout/commit/449399206d213c7561950b8fd72a6f58642914d7))
+
 ### [0.10.9](https://github.com/hikerpig/dagre-layout/compare/v0.10.8...v0.10.9) (2022-05-09)
 
 
