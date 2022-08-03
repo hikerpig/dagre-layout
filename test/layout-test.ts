@@ -3,24 +3,26 @@ import _ from 'lodash'
 import { expect } from 'chai'
 import { Graph } from '@pintora/graphlib'
 
-import dagre from '../src/index'
+import dagre, { GraphData, DEdge, DNode } from '../src/index'
 
 const { layout } = dagre
 
 describe('layout', function () {
-  let g
+  let g: Graph<Partial<DNode>, Partial<DEdge>, GraphData>
 
   beforeEach(function () {
     g = new Graph({ multigraph: true, compound: true })
       .setGraph({})
-      .setDefaultEdgeLabel(function () { return {} })
+      .setDefaultEdgeLabel(function () {
+        return {}
+      })
   })
 
   it('can layout a single node', function () {
     g.setNode('a', { width: 50, height: 100 })
     layout(g)
     expect(extractCoordinates(g)).to.eql({
-      a: { x: 50 / 2, y: 100 / 2 }
+      a: { x: 50 / 2, y: 100 / 2 },
     })
     expect(g.node('a').x).to.equal(50 / 2)
     expect(g.node('a').y).to.equal(100 / 2)
@@ -33,7 +35,7 @@ describe('layout', function () {
     layout(g)
     expect(extractCoordinates(g)).to.eql({
       a: { x: 50 / 2, y: 200 / 2 },
-      b: { x: 50 + 200 + 75 / 2, y: 200 / 2 }
+      b: { x: 50 + 200 + 75 / 2, y: 200 / 2 },
     })
   })
 
@@ -45,7 +47,7 @@ describe('layout', function () {
     layout(g)
     expect(extractCoordinates(g)).to.eql({
       a: { x: 75 / 2, y: 100 / 2 },
-      b: { x: 75 / 2, y: 100 + 300 + 200 / 2 }
+      b: { x: 75 / 2, y: 100 + 300 + 200 / 2 },
     })
 
     // We should not get x, y coordinates if the edge has no label
@@ -61,10 +63,12 @@ describe('layout', function () {
     layout(g)
     expect(extractCoordinates(g)).to.eql({
       a: { x: 75 / 2, y: 100 / 2 },
-      b: { x: 75 / 2, y: 100 + 150 + 70 + 150 + 200 / 2 }
+      b: { x: 75 / 2, y: 100 + 150 + 70 + 150 + 200 / 2 },
     })
-    expect(_.pick(g.edge('a', 'b'), ['x', 'y']))
-      .eqls({ x: 75 / 2, y: 100 + 150 + 70 / 2 })
+    expect(_.pick(g.edge('a', 'b'), ['x', 'y'])).eqls({
+      x: 75 / 2,
+      y: 100 + 150 + 70 / 2,
+    })
   })
 
   describe('can layout an edge with a long label, with rankdir =', function () {
@@ -102,16 +106,34 @@ describe('layout', function () {
         _.forEach(['a', 'b', 'c', 'd'], function (v) {
           g.setNode(v, { width: 10, height: 10 })
         })
-        g.setEdge('a', 'b', { width: 10, height: 10, labelpos: 'l', labeloffset: 1000 })
-        g.setEdge('c', 'd', { width: 10, height: 10, labelpos: 'r', labeloffset: 1000 })
+        g.setEdge('a', 'b', {
+          width: 10,
+          height: 10,
+          labelpos: 'l',
+          labeloffset: 1000,
+        })
+        g.setEdge('c', 'd', {
+          width: 10,
+          height: 10,
+          labelpos: 'r',
+          labeloffset: 1000,
+        })
         layout(g)
 
         if (rankdir === 'TB' || rankdir === 'BT') {
-          expect(g.edge('a', 'b').x - g.edge('a', 'b').points[0].x).equals(-1000 - 10 / 2)
-          expect(g.edge('c', 'd').x - g.edge('c', 'd').points[0].x).equals(1000 + 10 / 2)
+          expect(g.edge('a', 'b').x - g.edge('a', 'b').points[0].x).equals(
+            -1000 - 10 / 2
+          )
+          expect(g.edge('c', 'd').x - g.edge('c', 'd').points[0].x).equals(
+            1000 + 10 / 2
+          )
         } else {
-          expect(g.edge('a', 'b').y - g.edge('a', 'b').points[0].y).equals(-1000 - 10 / 2)
-          expect(g.edge('c', 'd').y - g.edge('c', 'd').points[0].y).equals(1000 + 10 / 2)
+          expect(g.edge('a', 'b').y - g.edge('a', 'b').points[0].y).equals(
+            -1000 - 10 / 2
+          )
+          expect(g.edge('c', 'd').y - g.edge('c', 'd').points[0].y).equals(
+            1000 + 10 / 2
+          )
         }
       })
     })
@@ -124,9 +146,7 @@ describe('layout', function () {
     g.setEdge('a', 'b', { width: 60, height: 70, minlen: 2, labelpos: 'c' })
     layout(g)
     expect(g.edge('a', 'b').x).to.equal(75 / 2)
-    expect(g.edge('a', 'b').y)
-      .to.be.gt(g.node('a').y)
-      .to.be.lt(g.node('b').y)
+    expect(g.edge('a', 'b').y).to.be.gt(g.node('a').y).to.be.lt(g.node('b').y)
   })
 
   it('can layout out a short cycle', function () {
@@ -138,7 +158,7 @@ describe('layout', function () {
     layout(g)
     expect(extractCoordinates(g)).to.eql({
       a: { x: 100 / 2, y: 100 / 2 },
-      b: { x: 100 / 2, y: 100 + 200 + 100 / 2 }
+      b: { x: 100 / 2, y: 100 + 200 + 100 / 2 },
     })
     // One arrow should point down, one up
     expect(g.edge('a', 'b').points[1].y).gt(g.edge('a', 'b').points[0].y)
@@ -156,7 +176,7 @@ describe('layout', function () {
     expect(points).eqls([
       { x: 100 / 2, y: 100 }, // intersect with bottom of a
       { x: 100 / 2, y: 100 + 200 / 2 }, // point for edge label
-      { x: 100 / 2, y: 100 + 200 } // intersect with top of b
+      { x: 100 / 2, y: 100 + 200 }, // intersect with top of b
     ])
   })
 
@@ -173,7 +193,7 @@ describe('layout', function () {
       { x: 100 / 2, y: 100 + 200 / 2 }, // bend #1
       { x: 100 / 2, y: 100 + 400 / 2 }, // point for edge label
       { x: 100 / 2, y: 100 + 600 / 2 }, // bend #2
-      { x: 100 / 2, y: 100 + 800 / 2 } // intersect with top of b
+      { x: 100 / 2, y: 100 + 800 / 2 }, // intersect with top of b
     ])
   })
 
@@ -231,7 +251,7 @@ describe('layout', function () {
     g.setNode('sg', {})
     g.setParent('a', 'sg')
 
-    function check (rankdir) {
+    function check(rankdir) {
       expect(g.node('sg').width, 'width ' + rankdir).gt(50)
       expect(g.node('sg').height, 'height ' + rankdir).gt(50)
       expect(g.node('sg').x, 'x ' + rankdir).gt(50 / 2)
@@ -270,7 +290,10 @@ describe('layout', function () {
           g.setNode('a', { width: 100, height: 100 })
           g.setNode('b', { width: 100, height: 100 })
           g.setEdge('a', 'b', {
-            width: 1000, height: 2000, labelpos: 'l', labeloffset: 0
+            width: 1000,
+            height: 2000,
+            labelpos: 'l',
+            labeloffset: 0,
           })
           layout(g)
           if (rankdir === 'TB' || rankdir === 'BT') {
@@ -284,20 +307,37 @@ describe('layout', function () {
   })
 
   it('treats attributes with case-insensitivity', function () {
-    g.graph().nodeSep = 200 // note the capital S
+    (g.graph() as any).nodeSep = 200 // note the capital S
     g.setNode('a', { width: 50, height: 100 })
     g.setNode('b', { width: 75, height: 200 })
     layout(g)
     expect(extractCoordinates(g)).to.eql({
       a: { x: 50 / 2, y: 200 / 2 },
-      b: { x: 50 + 200 + 75 / 2, y: 200 / 2 }
+      b: { x: 50 + 200 + 75 / 2, y: 200 / 2 },
+    })
+  })
+
+  describe('layout box', () => {
+    it('should handle subgraph minwidth', function () {
+      g.setNode('a', { width: 50, height: 100 })
+      g.setNode('parent', { minwidth: 210 })
+      g.setParent('a', 'parent')
+      layout(g)
+      expect(extractCoordinates(g)).to.eql({
+        a: { x: 60, y: 75 },
+        parent: { x: 105, y: 75 },
+      })
+      expect(g.node('parent').width).to.eql(210)
     })
   })
 })
 
-function extractCoordinates (g) {
+function extractCoordinates(g) {
   const nodes = g.nodes()
-  return _.zipObject(nodes, _.map(nodes, function (v) {
-    return _.pick(g.node(v), ['x', 'y'])
-  }))
+  return _.zipObject(
+    nodes,
+    _.map(nodes, function (v) {
+      return _.pick(g.node(v), ['x', 'y'])
+    })
+  )
 }

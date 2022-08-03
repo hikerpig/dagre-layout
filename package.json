@@ -19,11 +19,11 @@
   ],
   "scripts": {
     "format": "prettier --fix -w src",
-    "test": "pnpx jest --coverage",
+    "test": "pnpm exec jest --coverage",
     "_bench": "node -r @babel/register lib/bench.js",
-    "build": "NODE_ENV=production pnpx rollup -c",
-    "typecheck": "pnpx tsc --noEmit",
-    "watch": "pnpx build --watch"
+    "build": "NODE_ENV=production pnpm exec rollup -c",
+    "typecheck": "pnpm exec tsc --noEmit",
+    "watch": "pnpm exec build --watch"
   },
   "dependencies": {
     "@pintora/graphlib": "^2.2.2",
@@ -39,6 +39,7 @@
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/chai": "^4.3.1",
     "@types/jest": "^26.0.23",
+    "@types/lodash": "^4.14.182",
     "@types/lodash-es": "^4.17.4",
     "benchmark": "^2.1.4",
     "chai": "^4.1.2",
